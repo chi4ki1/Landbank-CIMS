@@ -2,5 +2,6 @@
     "cSpell.enabledLanguageIds": [
         "COBOL",
         "ACUCOBOL"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }
