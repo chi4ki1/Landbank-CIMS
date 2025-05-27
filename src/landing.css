@@ -1,22 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;  
-  overflow-x: hidden; /* Fine for preventing horizontal scrolling */
+  box-sizing: border-box;
 }
 
 body, html {
     height: 100%;
     margin: 0;
-     font-family: "Roboto", sans-serif;
+     font-family: "Roboto", poppins, sans-serif;
     box-sizing: border-box;
   }
   
   .background-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: url('assets\landbank-BG.png') center center/cover no-repeat;
-    filter: brightness(0.5);
+    background: url('assets/landbank-BG.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
     z-index: 0;
   }
   
@@ -67,7 +71,7 @@ body, html {
   }
   
   .logo {
-    width: 90px;
+    width: 320px;
     height: 90px;
     margin-bottom: 10px;
   }
@@ -156,11 +160,23 @@ body, html {
   }
   
   .socials img {
-    width: 28px;
-    height: 28px;
-    filter: brightness(0) invert(1);
+    width: 35px;
+    height: 45px;
+    cursor: pointer;
     transition: filter 0.2s;
   }
+
+.socials img[alt="Twitter"] {
+  width: 40px;
+  height: 55px;
+}
+
+.socials img[alt="Facebook"] {
+  margin-top: 3px;
+  width: 40px;
+  height: 50px;
+}
+
   
   .socials img:hover {
     filter: brightness(0.8) invert(0.7) sepia(1) hue-rotate(90deg);
