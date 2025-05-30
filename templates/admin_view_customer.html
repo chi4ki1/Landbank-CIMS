@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Customer - Admin</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    h2 { text-align: center; }
+    .section {
+      border: 1px solid #000;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      background-color: green;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+    }
+    .row { display: flex; flex-wrap: wrap; }
+    .col {
+      flex: 1;
+      min-width: 200px;
+      margin: 5px;
+    }
+    label { font-weight: bold; }
+    .back {
+      text-align: center;
+    }
+    .back a {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #1e90ff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Customer Record</h2>
+  <div class="section">
+    <div class="section-title">Basic Information</div>
+    <div class="row">
+      <div class="col"><label>Customer No:</label> {{ customer.cust_no }}</div>
+      <div class="col"><label>Name:</label> {{ customer.custname }}</div>
+      <div class="col"><label>Email:</label> {{ customer.email_address }}</div>
+    </div>
+    <div class="row">
+      <div class="col"><label>Date of Birth:</label> {{ customer.datebirth }}</div>
+      <div class="col"><label>Nationality:</label> {{ customer.nationality }}</div>
+      <div class="col"><label>Citizenship:</label> {{ customer.citizenship }}</div>
+    </div>
+    <div class="row">
+      <div class="col"><label>Sex:</label> {{ customer.custsex }}</div>
+      <div class="col"><label>Place of Birth:</label> {{ customer.placebirth }}</div>
+      <div class="col"><label>Civil Status:</label> {{ customer.civilstatus }}</div>
+    </div>
+    <div class="row">
+      <div class="col"><label>No. of Children:</label> {{ customer.num_children }}</div>
+      <div class="col"><label>Mother’s Maiden Name:</label> {{ customer.mmaiden_name }}</div>
+    </div>
+    <div class="row">
+      <div class="col"><label>Address:</label> {{ customer.cust_address }}</div>
+      <div class="col"><label>Contact No:</label> {{ customer.contact_no }}</div>
+    </div>
+  </div>
+  <div class="back">
+    <a href="/admin_dashboard">← Back to Dashboard</a>
+  </div>
+</body>
+</html>

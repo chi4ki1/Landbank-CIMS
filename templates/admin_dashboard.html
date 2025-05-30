@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - LANDBANK</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: green;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #008000;
+      color: white;
+    }
+    .actions button {
+      margin-right: 5px;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .view-btn { background-color: #3498db; color: white; }
+    .edit-btn { background-color: #f39c12; color: white; }
+    .delete-btn { background-color: #e74c3c; color: white; }
+    .logout-link {
+      display: inline-block;
+      margin: 20px 0;
+      text-align: center;
+      text-decoration: none;
+      color: red;
+      font-weight: bold;
+    }
+    .top-controls {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .compute-btn {
+      padding: 10px 20px;
+      background-color: darkgreen;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard - Customer List</h1>
+
+  <div class="top-controls">
+    <form action="/compute_customers" method="POST" style="display:inline;">
+        {% if session.total_customers %}
+  <div style="text-align: center; margin: 10px 0; font-weight: bold; color: darkgreen;">
+    Total Customers: {{ session.total_customers }}
+  </div>
+{% endif %}
+
+      <button class="compute-btn">Compute All Customers</button>
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Customer No</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for customer in customers %}
+      <tr>
+        <td>{{ customer.cust_no }}</td>
+        <td>{{ customer.custname }}</td>
+        <td>{{ customer.email_address }}</td>
+        <td class="actions">
+          <form action="/admin/view/{{ customer.cust_no }}" method="GET" style="display:inline;">
+            <button class="view-btn">View</button>
+          </form>
+          <form action="/admin/edit/{{ customer.cust_no }}" method="GET" style="display:inline;">
+            <button class="edit-btn">Edit</button>
+          </form>
+          <form action="/admin/delete/{{ customer.cust_no }}" method="POST" style="display:inline;">
+            <button class="delete-btn" onclick="return confirm('Are you sure?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="text-align: center;">
+    <a href="/logout" class="logout-link">Logout</a>
+  </div>
+</body>
+</html>

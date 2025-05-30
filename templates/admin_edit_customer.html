@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Customer - Admin</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    h2 { text-align: center; }
+    .section {
+      border: 1px solid #000;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      background-color: green;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+    }
+    .row { display: flex; flex-wrap: wrap; }
+    .col {
+      flex: 1;
+      min-width: 200px;
+      margin: 5px;
+    }
+    label { font-weight: bold; }
+    input, select {
+      width: 100%;
+      padding: 5px;
+    }
+    .btn {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .btn button {
+      padding: 10px 20px;
+      background-color: orange;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Edit Customer Record</h2>
+  <form method="POST">
+    <div class="section">
+      <div class="section-title">Customer Information</div>
+      <div class="row">
+        <div class="col"><label>Customer No:</label><input type="text" value="{{ customer.cust_no }}" readonly></div>
+        <div class="col"><label>Full Name:</label><input type="text" name="custname" value="{{ customer.custname }}"></div>
+        <div class="col"><label>Date of Birth:</label><input type="date" name="datebirth" value="{{ customer.datebirth }}"></div>
+      </div>
+      <div class="row">
+        <div class="col"><label>Nationality:</label><input type="text" name="nationality" value="{{ customer.nationality }}"></div>
+        <div class="col"><label>Citizenship:</label><input type="text" name="citizenship" value="{{ customer.citizenship }}"></div>
+        <div class="col">
+          <label>Sex:</label>
+          <select name="custsex">
+            <option value="M" {% if customer.custsex == 'M' %}selected{% endif %}>Male</option>
+            <option value="F" {% if customer.custsex == 'F' %}selected{% endif %}>Female</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col"><label>Place of Birth:</label><input type="text" name="placebirth" value="{{ customer.placebirth }}"></div>
+        <div class="col">
+          <label>Civil Status:</label>
+          <select name="civilstatus">
+            {% for status in ['Single','Married','Widowed','Divorced','Separated'] %}
+              <option value="{{ status }}" {% if customer.civilstatus == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col"><label>Mother’s Maiden Name:</label><input type="text" name="mmaiden_name" value="{{ customer.mmaiden_name }}"></div>
+      </div>
+      <div class="row">
+        <div class="col"><label>No. of Children:</label><input type="number" name="num_children" value="{{ customer.num_children }}"></div>
+        <div class="col"><label>Address:</label><input type="text" name="cust_address" value="{{ customer.cust_address }}"></div>
+        <div class="col"><label>Email:</label><input type="email" name="email_address" value="{{ customer.email_address }}"></div>
+      </div>
+      <div class="row">
+        <div class="col"><label>Contact No:</label><input type="text" name="contact_no" value="{{ customer.contact_no }}"></div>
+      </div>
+    </div>
+    <div class="btn">
+      <button type="submit">Update Record</button>
+    </div>
+  </form>
+</body>
+</html>
