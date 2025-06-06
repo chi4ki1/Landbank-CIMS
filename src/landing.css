@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 * {
   margin: 0;
@@ -7,186 +6,212 @@
 }
 
 body, html {
-    height: 100%;
-    margin: 0;
-     font-family: "Roboto", poppins, sans-serif;
-    box-sizing: border-box;
+  height: 100%;
+  font-family: 'Inter', poppins, sans-serif;
+  background: transparent;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('assets/landbank-BG.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+/* NAVBAR */
+.navbar {
+  width: 100%;
+  background: #155643;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 70px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  width: 48px;
+  height: 48px;
+  margin-right: 16px;
+}
+
+.navbar-title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 32px;
+}
+
+.navbar-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+  color: #e0e0e0;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 60px;
+}
+
+.subtitle {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.main-logo {
+  width: 240px;
+  height: 240px;
+  margin-bottom: 32px;
+  border-radius: 50%;
+  background: #7ed321;
+  object-fit: contain;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+}
+
+.portal-title {
+  color: #fff;
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 36px;
+  text-align: center;
+  font-family: 'Fredoka', 'Roboto', sans-serif;
+}
+
+.button-group {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.register-btn {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 32px;
+  padding: 18px 48px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  transition: background 0.2s;
+}
+
+.register-btn:hover {
+  background: #b71c1c;
+}
+
+.login-btn {
+  background: transparent;
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 32px;
+  padding: 18px 48px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.login-btn:hover {
+  background: #fff;
+  color: #155643;
+}
+
+.socials {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 32px;
+}
+
+.socials img {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  filter: brightness(0) invert(1);
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.socials img:hover {
+  filter: brightness(0.8) sepia(1) hue-rotate(90deg);
+  transform: scale(1.1);
+}
+
+@media (max-width: 900px) {
+  .portal-title {
+    font-size: 3rem;
   }
-  
-  .background-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: url('assets/landbank-BG.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
-    z-index: 0;
+  .main-logo {
+    width: 160px;
+    height: 160px;
   }
-  
-  .menu {
-    position: absolute;
-    top: 30px;
-    right: 40px;
-    z-index: 2;
-  }
-  
-  .menu-btn {
-    background: #fff;
-    border: none;
-    border-radius: 25px;
-    padding: 10px 25px;
-    display: flex;
-    align-items: center;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  
-  .menu-icon {
-    font-size: 24px;
-    margin-right: 10px;
-  }
-  
-  .menu-text {
-    font-weight: 500;
-    letter-spacing: 1px;
-  }
-  
-  .container {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .logo-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 40px;
-  }
-  
-  .logo {
-    width: 320px;
-    height: 90px;
-    margin-bottom: 10px;
-  }
-  
-  .logo-section h1 {
-    color: #fff;
-    font-size: 48px;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: 2px;
-  }
-  
   .subtitle {
-    color: #fff;
-    font-size: 14px;
-    margin-top: 5px;
-    margin-bottom: 0;
-    letter-spacing: 0.5px;
+    font-size: 1.2rem;
   }
-  
-  .login-form {
-    display: flex;
+  .button-group {
     flex-direction: column;
-    align-items: center;
-    width: 420px;
-    max-width: 90vw;
-    margin-bottom: 30px;
+    gap: 18px;
   }
-  
-  .login-form input {
-    width: 100%;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 40px;
-    font-size: 20px;
-    background: #fff;
-    color: #333;
-    outline: none;
-    box-sizing: border-box;
-  }
-  
-  .login-btn {
-    width: 150px;
-    padding: 12px 0;
-    border: none;
-    border-radius: 25px;
-    background: #fff;
-    color: #217a6b;
-    font-size: 20px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: background 0.2s;
-  }
-  
-  .login-btn:hover {
-    background: #e0e0e0;
-  }
-  
-  .links {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 40px;
-  }
-  
-  .links a {
-    color: #fff;
-    font-size: 20px;
-    margin: 8px 0;
-    text-decoration: none;
-    letter-spacing: 1px;
-    transition: text-decoration 0.2s;
-  }
-  
-  .links a:hover {
-    text-decoration: underline;
-  }
-  
-  .socials {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    margin-top: 30px;
-  }
-  
-  .socials img {
-    width: 35px;
-    height: 45px;
-    cursor: pointer;
-    transition: filter 0.2s;
-  }
-
-.socials img[alt="Twitter"] {
-  width: 40px;
-  height: 55px;
 }
 
-.socials img[alt="Facebook"] {
-  margin-top: 3px;
-  width: 40px;
-  height: 50px;
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 12px 8px;
+  }
+  .navbar-title {
+    font-size: 18px;
+  }
+  .main-logo {
+    width: 100px;
+    height: 100px;
+  }
+  .portal-title {
+    font-size: 2rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+  }
 }
-
-  
-  .socials img:hover {
-    filter: brightness(0.8) invert(0.7) sepia(1) hue-rotate(90deg);
-  }
-  
-  @media (max-width: 600px) {
-    .login-form {
-      width: 95vw;
-    }
-    .logo-section h1 {
-      font-size: 32px;
-    }
-  }
