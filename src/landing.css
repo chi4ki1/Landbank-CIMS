@@ -78,6 +78,7 @@ body, html {
 }
 
 .navbar-links a {
+  font-family: 'Aristotelica-Regular', sans-serif;
   color: #fff;
   text-decoration: none;
   font-size: 16px;

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Landbank CIMS</title>
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <!-- Logo -->
+            <div class="logo-container">
+                <img src="assets/landbank-logo.png" alt="Landbank Logo" class="logo">
+            </div>
+
+            <!-- Login Form -->
+            <form class="login-form" action="/login" method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-button">Sign In</button>
+            </form>
+
+            <!-- Footer -->
+            <div class="signup-link">
+                <p>Don't have an account? <a href="/register">Sign up</a></p>
+        </div>
+
+          </div>
+            
+            <div class="socials">
+                <a href="#"><img src="assets/facebook-logo.png" alt="Facebook" class="Facebook-logo"></a>
+                <a href="#"><img src="assets/twitter-logo.png" alt="Twitter" class="twitter-logo"></a>
+                <a href="#"><img src="assets/linkedin-logo.png" alt="LinkedIn"></a>
+                <a href="#"><img src="assets/instagram-logo.png" alt="Instagram"></a>
+            </div>
+
+    </div>
+</body>
+</html>

@@ -14,18 +14,21 @@ def get_db_connection():
 def landingPage():
     return render_template('landingPage.html')
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    email = request.form['email']
+    if request.method == 'GET':
+        return render_template('login.html')
+        
+    username = request.form['username']
     password = request.form['password']
 
-    if email == 'landbankADMIN@gmail.com' and password == 'LandBank2025':
+    if username == 'landbankADMIN@gmail.com' and password == 'LandBank2025':
         session['admin'] = True
         return redirect('/admin_dashboard')
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Customer WHERE email_address = %s AND cust_no = %s", (email, password))
+    cursor.execute("SELECT * FROM Customer WHERE email_address = %s AND cust_no = %s", (username, password))
     user = cursor.fetchone()
     conn.close()
 
@@ -34,7 +37,7 @@ def login():
         return redirect('/home')
     else:
         flash('Invalid login credentials')
-        return redirect('/')
+        return redirect('/login')
 
 @app.route('/home')
 def home():
