@@ -35,7 +35,7 @@
                     <a href="#" class="forgot-password">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="login-button">Sign In</button>
+                <button type="submit" class="login-button">SIGN IN</button>
             </form>
 
             <!-- Footer -->
@@ -53,5 +53,18 @@
             </div>
 
     </div>
+
+    <script>
+        document.querySelector('.login-form').onsubmit = function(e) {
+          e.preventDefault();
+          // For demo, just use the username field as the name
+          const username = document.getElementById('username').value;
+          // Store the name (simulate login)
+          localStorage.setItem('lbmsUser', username);
+          // Redirect to home
+          window.location.href = 'home.html';
+        };
+      </script>
+      
 </body>
 </html>

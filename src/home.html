@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Landbank - Customer Information Management System</title>
-  <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="home.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Fredoka:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="background-overlay"></div>
+    <div class="background-overlay"></div>
   <header class="navbar">
     <div class="navbar-left">
       <img src="assets/LANDBANK.png" alt="Landbank Logo" class="navbar-logo">
@@ -25,25 +25,34 @@
   </header>
   <main class="main-content">
     <div class="center-content">
-      <div class="subtitle">LANDBANK MANAGEMENT SYSTEM</div>
-      <img src="assets/LANDBANK.png" alt="Landbank Logo" class="main-logo">
-      <h1 class="portal-title">LBMS PORTAL</h1>
-      <div class="button-group">
-        <button class="register-btn">REGISTER</button>
-        <button class="login-btn">LOG IN</button>
-      </div>
-      <div class="socials">
-        <a href="#"><img src="assets/facebook-logo.png" alt="Facebook" class="Facebook-logo"></a>
-        <a href="#"><img src="assets/twitter-logo.png" alt="Twitter" class="twitter-logo"></a>
-        <a href="#"><img src="assets/linkedin-logo.png" alt="LinkedIn"></a>
-        <a href="#"><img src="assets/instagram-logo.png" alt="Instagram"></a>
+    <img src="assets/LANDBANK.png" alt="Landbank Logo" class="main-logo">
+      <h1 id="welcome-message">WELCOME, USER</h1> 
+      <p>What would you like to do?</p>
+      <div class="icon-row">
+        <div class="icon-block">
+          <img src="assets/transactions-icon.png" alt="Transactions">
+          <div>TRANSACTIONS</div>
+        </div>
+        <div class="icon-block">
+          <img src="assets/profile-icon.png" alt="Profile">
+          <div>PROFILE</div>
+        </div>
+        <div class="icon-block">
+          <img src="assets/forms-icon.png" alt="Forms">
+          <div>FORMS</div>
+        </div>
       </div>
     </div>
   </main>
-  <!-- Add this inside <script> at the end of body in landing.html -->
-    <script>
-      document.querySelector('.register-btn').onclick = () => window.location.href = 'register.html';
-      document.querySelector('.login-btn').onclick = () => window.location.href = 'login.html';
-    </script>  
+  <script>
+    // Get user from localStorage
+    const user = localStorage.getItem('lbmsUser');
+    if (!user) {
+      // Not logged in, redirect to login
+      window.location.href = 'login.html';
+    } else {
+      document.getElementById('welcome-message').textContent = `WELCOME, ${user.toUpperCase()}`;
+    }
+  </script>
 </body>
 </html>
