@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LBMS Portal - Registration</title>
+    <link rel="stylesheet" href="registration1.css">
+</head>
+<body>
+      <div class="background-overlay">
+    <video autoplay loop muted playsinline id="background-video">
+      <source src="assets/aerial-shot-LANDBANK.mp4" type="video/mp4"> 
+      Your browser does not support the video tag.
+    </video>
+  </div>
+    <div class="container">
+         <header class="navbar">
+    <div class="navbar-left">
+      <img src="assets/LANDBANK.png" alt="Landbank Logo" class="navbar-logo">
+      <span class="navbar-title">LBMS PORTAL</span>
+    </div>
+    <nav class="navbar-links">
+      <a href="#">HOME</a>
+      <a href="#">ABOUT</a>
+      <a href="#">SERVICES</a>
+      <a href="#">CONTACT</a>
+    </nav>
+  </header>
+        <form class="profile-form">
+            <h2><span class="icon">👤</span> Profile Information</h2>
+            <section class="section-name">
+                <h3><span class="icon">👤</span> Name</h3>
+                <div class="row">
+                    <input type="text" placeholder="Last Name" name="lastName">
+                    <input type="text" placeholder="First Name" name="firstName">
+                    <input type="text" placeholder="Middle Name" name="middleName">
+                </div>
+                <div class="row">
+                    <input type="date" placeholder="Date of Birth" name="dob">
+                    <input type="text" placeholder="Nationality" name="nationality">
+                    <input type="text" placeholder="Citizenship" name="citizenship">
+                    <select name="sex">
+                        <option value="">Sex</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <select name="civilStatus">
+                        <option value="">Civil Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Widowed">Widowed</option>
+                        <option value="Divorced">Divorced</option>
+                    </select>
+                    <input type="number" placeholder="No. of Children" name="children" min="0">
+                </div>
+                <div class="row">
+                    <input type="text" placeholder="Place of Birth" name="placeOfBirth">
+                    <input type="text" placeholder="Current Address (No./Street, Subd.,Brgy./District/Municipality/City/Province)" name="address">
+                </div>
+                <div class="row">
+                    <input type="text" placeholder="Mother's Maiden Name" name="motherMaidenName">
+                </div>
+                <div class="row">
+                    <input type="number" placeholder="Age" name="age" min="18" max="100">
+                </div>
+            </section>
+            <section class="section-contact">
+                <h3><span class="icon">✉️</span> Contact</h3>
+                <div class="row">
+                    <input type="email" placeholder="Email" name="email">
+                    <input type="tel" placeholder="Telephone Number" name="telephone">
+                </div>
+            </section>
+            <section class="section-spouse">
+                <h3><span class="icon">👤</span> Spouse</h3>
+                <div class="row">
+                    <input type="text" placeholder="Last Name" name="spouseLastName">
+                    <input type="text" placeholder="First Name" name="spouseFirstName">
+                    <input type="text" placeholder="Middle Name" name="spouseMiddleName">
+                </div>
+                <div class="row">
+                    <input type="date" placeholder="Date of Birth" name="spouseDob">
+                    <input type="text" placeholder="Profession" name="spouseProfession">
+                </div>
+            </section>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn">⟲ CANCEL</button>
+                <button type="submit" class="next-btn">NEXT</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
