@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LBMS Portal - Registration</title>
-    <link rel="stylesheet" href="registration1.css">
+    <link rel="stylesheet" href="registration.css">
 </head>
 <body>
       <div class="background-overlay">
@@ -27,9 +27,10 @@
     </nav>
   </header>
         <form class="profile-form">
-            <h2><span class="icon">👤</span> Profile Information</h2>
+            <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> Profile Information</h2>
+            <hr style="border: 0; border-top: 1.5px solid #545454; margin: 10px 0 20px 0;">
             <section class="section-name">
-                <h3><span class="icon">👤</span> Name</h3>
+                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span> Name</h3>
                 <div class="row">
                     <input type="text" placeholder="Last Name" name="lastName">
                     <input type="text" placeholder="First Name" name="firstName">
@@ -39,13 +40,13 @@
                     <input type="date" placeholder="Date of Birth" name="dob">
                     <input type="text" placeholder="Nationality" name="nationality">
                     <input type="text" placeholder="Citizenship" name="citizenship">
-                    <select name="sex">
-                        <option value="">Sex</option>
+                    <select name="sex" required>
+                        <option value="" disabled selected hidden>Sex</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
-                    </select>
-                    <select name="civilStatus">
-                        <option value="">Civil Status</option>
+                      </select>
+                    <select name="civilStatus" required>
+                        <option value="" disabled selected hidden>Civil Status</option>
                         <option value="Single">Single</option>
                         <option value="Married">Married</option>
                         <option value="Widowed">Widowed</option>
@@ -65,14 +66,14 @@
                 </div>
             </section>
             <section class="section-contact">
-                <h3><span class="icon">✉️</span> Contact</h3>
+                <h3><span class="icon"><img src="assets/contact_icon.png" alt="Contact Icon" style="width: 2em; vertical-align: middle;"></span> Contact</h3>
                 <div class="row">
                     <input type="email" placeholder="Email" name="email">
                     <input type="tel" placeholder="Telephone Number" name="telephone">
                 </div>
             </section>
             <section class="section-spouse">
-                <h3><span class="icon">👤</span> Spouse</h3>
+                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span> Spouse</h3>
                 <div class="row">
                     <input type="text" placeholder="Last Name" name="spouseLastName">
                     <input type="text" placeholder="First Name" name="spouseFirstName">

@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
 import mysql.connector
 from config import db_config
 import datetime
@@ -219,6 +219,79 @@ def add_customer():
     conn.close()
     flash("Customer successfully registered!", "success")
     return redirect('/')
+
+@app.route('/api/customers')
+def get_customers():
+    page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '')
+    status = request.args.get('status', '')
+    sort = request.args.get('sort', 'name')
+    direction = request.args.get('direction', 'asc')
+    
+    # Base query
+    query = "SELECT * FROM customers WHERE 1=1"
+    params = []
+    
+    # Add search condition
+    if search:
+        query += " AND (custname LIKE %s OR email_address LIKE %s)"
+        params.extend([f'%{search}%', f'%{search}%'])
+    
+    # Add status filter
+    if status:
+        query += " AND status = %s"
+        params.append(status)
+    
+    # Add sorting
+    valid_columns = ['name', 'email', 'status']
+    if sort in valid_columns:
+        sort_column = {
+            'name': 'custname',
+            'email': 'email_address',
+            'status': 'status'
+        }[sort]
+        query += f" ORDER BY {sort_column} {'ASC' if direction == 'asc' else 'DESC'}"
+    
+    # Add pagination
+    per_page = 10
+    offset = (page - 1) * per_page
+    query += " LIMIT %s OFFSET %s"
+    params.extend([per_page, offset])
+    
+    # Execute query
+    cursor = mysql.connector.connect(**db_config).cursor(dictionary=True)
+    cursor.execute(query, params)
+    customers = cursor.fetchall()
+    
+    # Get total count for pagination
+    count_query = "SELECT COUNT(*) as total FROM customers WHERE 1=1"
+    count_params = []
+    if search:
+        count_query += " AND (custname LIKE %s OR email_address LIKE %s)"
+        count_params.extend([f'%{search}%', f'%{search}%'])
+    if status:
+        count_query += " AND status = %s"
+        count_params.append(status)
+    
+    cursor.execute(count_query, count_params)
+    total = cursor.fetchone()['total']
+    
+    return jsonify({
+        'customers': customers,
+        'total_pages': (total + per_page - 1) // per_page
+    })
+
+@app.route('/api/customers/<int:customer_id>', methods=['DELETE'])
+def delete_customer(customer_id):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM customers WHERE cust_no = %s", (customer_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'message': 'Customer deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=0000, debug=True)

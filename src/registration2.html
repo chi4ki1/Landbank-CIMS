@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LBMS Portal - Registration (Step 2)</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <div class="background-overlay">
+        <video autoplay loop muted playsinline id="background-video">
+            <source src="assets/aerial-shot-LANDBANK.mp4" type="video/mp4"> 
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="container">
+        <header class="navbar">
+            <div class="navbar-left">
+                <img src="assets/LANDBANK.png" alt="Landbank Logo" class="navbar-logo">
+                <span class="navbar-title">LBMS PORTAL</span>
+            </div>
+            <nav class="navbar-links">
+                <a href="#">HOME</a>
+                <a href="#">ABOUT</a>
+                <a href="#">SERVICES</a>
+                <a href="#">CONTACT</a>
+            </nav>
+        </header>
+        <form class="profile-form">
+            <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> Profile Information</h2>
+            <hr style="border: 0; border-top: 1.5px solid #545454; margin: 10px 0 20px 0;">
+            <section class="section-employment">
+                <h3><span class="icon"><img src="assets/employment-icon.png" alt="Employment Icon" style="width: 2em; vertical-align: middle;"></span> Employment Information</h3>
+                <div class="row">
+                    <select name="occupation" required>
+                        <option value="" disabled selected hidden>Occupation</option>
+                        <option value="Employed">Employed</option>
+                        <option value="Self-employed">Self-employed</option>
+                        <option value="OFW/Overseas Filipino">OFW/Overseas Filipino</option>
+                        <option value="Retired">Retired</option>
+                        <option value="Farmer/Fisher">Farmer/Fisher</option>
+                        <option value="Student/Minor">Student/Minor</option>
+                        <option value="Unemployed">Unemployed</option>
+                        <option value="Housewife">Housewife</option>
+                        <option value="Lawyers/Notary/Independent Legal Professional/Accountant">Lawyers/Notary/Independent Legal Professional/Accountant</option>
+                        <option value="Government Official">Government Official</option>
+                    </select>
+                    <select name="natureOfBusiness" required>
+                        <option value="" disabled selected hidden>Nature of Business/Economic Activity</option>
+                        <option value="1700">1700 - Private Household with Employed Persons</option>
+                        <option value="1800">1800 - Extra-territorial Organizations and Bodies</option>
+                        <option value="1204">1204 - Jewelry and Precious Stones Dealer</option>
+                        <option value="1005">1005 - Foreign Exchange Dealer Money Changer/ Remittance Agent</option>
+                        <option value="A0103">A0103 - Agriculture, Forestry, and Fishing</option>
+                        <option value="B0609">B0609 - Mining and Quarrying</option>
+                        <option value="C1033">C1033 - Manufacturing</option>
+                        <option value="D3500">D3500 - Electricity, Gas, Steam, and Air-conditioning Supply</option>
+                        <option value="E3639">E3639 - Water Supply, Sewerage, Waste Management and Remediation Activities </option>
+                        <option value="F4143">F4143 - Construction </option>
+                        <option value="G4547">G4547 - Wholesale and Retail Trade, Repair of Motor Vehicles and Motorcycles</option>
+                        <option value="H4953">H4953 - Transportation and Storage</option>
+                        <option value="I5556">I5556 - Accommodation and Food Service Activities</option>
+                        <option value="J5863">J5863 - Information and Communication</option>
+                        <option value="K6466">K6466 - Financial and Insurance Activities</option>
+                        <option value="L800">L800 - Real Estate Activities</option>
+                        <option value="M6975">M6975 - Professional, Scientific, and Technical Activities</option>
+                        <option value="N7782">N7782 - Administrative and Support Service Activities</option>
+                        <option value="O6400">O6400 - Public Administrative and Defense, Compulsory Social Security</option>
+                        <option value="P8500">P8500 - Education</option>
+                        <option value="Q8688">Q8688 - Human Health and Social Work Activities</option>
+                        <option value="R9093">R9093 - Arts, Entertainment, and Recreation</option>
+                        <option value="S9496">S9496 - Other Service Activities (Activities of Membership Organizations)</option>
+                        <option value="T9798">T9798 - Activities of Private Households as Employers and Undifferentiated Goods and Service and Producing Activities of Households for own use</option>
+                        <option value="U9900">U9900 - Activities of Extraterritorial Organizations, and Bodies </option>
+                        <option value="V0000">V0000 - Others</option>
+                        <option value="V0001">V0001 - Others - Student/Minor/Retiree/Pensioner</option>
+                        <option value="V0002">V0002 - Others - Unemployed/Housewife</option>
+                        <option value="9200">9200 - Gambling and Betting Activities</option>
+                        <option value="9210">9210 - OGOs and OGO Service Providers</option>
+                        <option value="9220">9220 - Casinos</option>
+                    </select>
+                </div>
+            </section>
+            <section class="section-employer">
+                <h3><span class="icon"><img src="assets/info_icon.png" alt="Employer Icon" style="width: 2em; vertical-align: middle;"></span> Employer</h3>
+                <div class="row">
+                    <input type="text" placeholder="TIN ID" name="tinId">
+                </div>
+                <div class="row">
+                    <input type="text" placeholder="Last Name" name="employerLastName">
+                    <input type="text" placeholder="First Name" name="employerFirstName">
+                    <input type="text" placeholder="Middle Name" name="employerMiddleName">
+                </div>
+                <div class="row">
+                    <input type="text" placeholder="Current Address (No./Street, Subd.,Brgy./District/Municipality/City/Province)" name="employerAddress">
+                    <input type="text" placeholder="Phone/Fax Number" name="employerPhone">
+                </div>
+                <div class="row">
+                    <input type="text" placeholder="Job Title" name="jobTitle">
+                    <input type="date" placeholder="The Employment Date" name="employmentDate">
+                </div>
+            </section>
+            <section class="section-financial">
+                <h3><span class="icon"><img src="assets/finance-icon.png" alt="Financial Icon" style="width: 2em; vertical-align: middle;"></span> Financial Record</h3>
+                <div class="row">
+                    <div class="form-group" style="flex:2;">
+                        <label style="font-family: Inter; font-size: 1rem; color: #184d3a; font-weight: 500; margin-bottom: 10px;">Source of Wealth <span style="font-size:0.9em; color:#737373;">(1-Primary, 2-Secondary, 3-Other Source)</span></label>
+                        <br>
+                        <br>
+                        <div class="checkbox-group" style="display: flex; font-family: Inter; font-size: 0.9em; flex-wrap: wrap; gap: 15px;">
+                            <label><input type="checkbox" name="sourceOfWealth" value="Salary/Honoraria"> Salary/Honoraria</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Interest/Commission"> Interest/Commission</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Business"> Business</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Pension"> Pension</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Regular Remittance"> Regular Remittance</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Other Remittance"> Other Remittance</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Donations/Inheritance"> Donations/Inheritance</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Allowance"> Allowance</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Professional Fees - Others"> Professional Fees - Others</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Professional Fees - Lawyers/Notary/Independent"> Professional Fees - Lawyers/Notary/Independent</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Grant/Scholarship/Awards/Prizes/Benefits"> Grant/Scholarship/Awards/Prizes/Benefits</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Royalties/Commission"> Royalties/Commission</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Sale of Assets"> Sale of Assets</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Loans"> Loans</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Government Appropriations"> Government Appropriations</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Fees and Charges"> Fees and Charges</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Taxes and Licenses"> Taxes and Licenses</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Others - with documents"> Others - with documents</label>
+                            <label><input type="checkbox" name="sourceOfWealth" value="Others - without documents"> Others - without documents</label>
+                        </div>
+                    </div>
+                    <input type="text" placeholder="Monthly Gross Income/Pension/Allowance" name="monthlyIncome" style="flex:1;">
+                    <input type="text" placeholder="Annual Gross Income/Pension/Allowance" name="annualIncome" style="flex:1;">
+                </div>
+            </section>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn">⟲ CANCEL</button>
+                <button type="submit" class="next-btn">NEXT</button>
+            </div>
+        </form>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[name="sourceOfWealth"]');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                const checked = document.querySelectorAll('input[name="sourceOfWealth"]:checked');
+                if (checked.length > 3) {
+                    this.checked = false;
+                    alert('You can select up to three sources of wealth only.');
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html> 
