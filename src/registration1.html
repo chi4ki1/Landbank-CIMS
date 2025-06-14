@@ -20,68 +20,147 @@
       <span class="navbar-title">LBMS PORTAL</span>
     </div>
     <nav class="navbar-links">
-      <a href="#">HOME</a>
+      <a href="home.html">HOME</a>
       <a href="#">ABOUT</a>
       <a href="#">SERVICES</a>
       <a href="#">CONTACT</a>
     </nav>
   </header>
-        <form class="profile-form">
-            <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> Profile Information</h2>
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-step active">
+                <div class="step-number">1</div>
+                <div class="step-label">Personal Info</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">2</div>
+                <div class="step-label">Employment</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">3</div>
+                <div class="step-label">Additional</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+        <form id="registration1-form" class="profile-form">
+            <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> CUSTOMER INFORMATION SHEET FOR INDIVIDUAL CUSTOMER</h2>
             <hr style="border: 0; border-top: 1.5px solid #545454; margin: 10px 0 20px 0;">
             <section class="section-name">
-                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span> Name</h3>
+                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>PERSONAL INFORMATION</h3>
                 <div class="row">
-                    <input type="text" placeholder="Last Name" name="lastName">
-                    <input type="text" placeholder="First Name" name="firstName">
-                    <input type="text" placeholder="Middle Name" name="middleName">
+                    <div class="floating-label-group">
+                        <input type="text" id="lastName" name="lastName" required>
+                        <label for="lastName">Last Name</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="firstName" name="firstName" required>
+                        <label for="firstName">First Name</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="middleName" name="middleName">
+                        <label for="middleName">Middle Name</label>
+                    </div>
                 </div>
                 <div class="row">
-                    <input type="date" placeholder="Date of Birth" name="dob">
-                    <input type="text" placeholder="Nationality" name="nationality">
-                    <input type="text" placeholder="Citizenship" name="citizenship">
-                    <select name="sex" required>
-                        <option value="" disabled selected hidden>Sex</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                      </select>
-                    <select name="civilStatus" required>
-                        <option value="" disabled selected hidden>Civil Status</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Widowed">Widowed</option>
-                        <option value="Divorced">Divorced</option>
-                    </select>
-                    <input type="number" placeholder="No. of Children" name="children" min="0">
+                    <div class="floating-label-group">
+                        <input type="date" id="dob" name="dob" required>
+                        <label for="dob">Date of Birth</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="nationality" name="nationality">
+                        <label for="nationality">Nationality</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="citizenship" name="citizenship">
+                        <label for="citizenship">Citizenship</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <select id="sex" name="sex" required>
+                            <option value="" disabled selected hidden>▼</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                        <label for="sex">Sex</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <select id="civilStatus" name="civilStatus" required>
+                            <option value="" disabled selected hidden>▼</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Divorced">Divorced</option>
+                        </select>
+                        <label for="civilStatus">Civil Status</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="number" id="children" name="children" min="0">
+                        <label for="children">No. of Children</label>
+                    </div>
                 </div>
                 <div class="row">
-                    <input type="text" placeholder="Place of Birth" name="placeOfBirth">
-                    <input type="text" placeholder="Current Address (No./Street, Subd.,Brgy./District/Municipality/City/Province)" name="address">
+                    <div class="floating-label-group">
+                        <input type="text" id="placeOfBirth" name="placeOfBirth">
+                        <label for="placeOfBirth">Place of Birth</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="address" name="address">
+                        <label for="address">Current Address (No./Street, Subd.,Brgy./District/Municipality/City/Province)</label>
+                    </div>
                 </div>
                 <div class="row">
-                    <input type="text" placeholder="Mother's Maiden Name" name="motherMaidenName">
+                    <div class="floating-label-group">
+                        <input type="text" id="motherMaidenName" name="motherMaidenName">
+                        <label for="motherMaidenName">Mother's Maiden Name</label>
+                    </div>
                 </div>
                 <div class="row">
-                    <input type="number" placeholder="Age" name="age" min="18" max="100">
+                    <div class="floating-label-group">
+                        <input type="number" id="age" name="age" min="18" max="100">
+                        <label for="age">Age</label>
+                    </div>
                 </div>
             </section>
             <section class="section-contact">
-                <h3><span class="icon"><img src="assets/contact_icon.png" alt="Contact Icon" style="width: 2em; vertical-align: middle;"></span> Contact</h3>
+                <h3><span class="icon"><img src="assets/contact_icon.png" alt="Contact Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>CONTACT INFORMATION</h3> 
                 <div class="row">
-                    <input type="email" placeholder="Email" name="email">
-                    <input type="tel" placeholder="Telephone Number" name="telephone">
+                    <div class="floating-label-group">
+                        <input type="email" id="email" name="email">
+                        <label for="email">Email</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="tel" id="telephone" name="telephone">
+                        <label for="telephone">Phone Number</label>
+                    </div>
                 </div>
             </section>
             <section class="section-spouse">
-                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span> Spouse</h3>
+                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span> SPOUSE</h3>
                 <div class="row">
-                    <input type="text" placeholder="Last Name" name="spouseLastName">
-                    <input type="text" placeholder="First Name" name="spouseFirstName">
-                    <input type="text" placeholder="Middle Name" name="spouseMiddleName">
+                    <div class="floating-label-group">
+                        <input type="text" id="spouseLastName" name="spouseLastName">
+                        <label for="spouseLastName">Last Name</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="spouseFirstName" name="spouseFirstName">
+                        <label for="spouseFirstName">First Name</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="spouseMiddleName" name="spouseMiddleName">
+                        <label for="spouseMiddleName">Middle Name</label>
+                    </div>
                 </div>
                 <div class="row">
-                    <input type="date" placeholder="Date of Birth" name="spouseDob">
-                    <input type="text" placeholder="Profession" name="spouseProfession">
+                    <div class="floating-label-group">
+                        <input type="date" id="spouseDob" name="spouseDob">
+                        <label for="spouseDob">Date of Birth</label>
+                    </div>
+                    <div class="floating-label-group">
+                        <input type="text" id="spouseProfession" name="spouseProfession">
+                        <label for="spouseProfession">Profession</label>
+                    </div>
                 </div>
             </section>
             <div class="form-actions">
@@ -90,5 +169,6 @@
             </div>
         </form>
     </div>
+    <script src="js/registration.js"></script>
 </body>
 </html>
