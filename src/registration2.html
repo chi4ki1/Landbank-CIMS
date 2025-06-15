@@ -8,24 +8,8 @@
 </head>
 <body>
     <div class="background-overlay">
-        <video autoplay loop muted playsinline id="background-video">
-            <source src="assets/aerial-shot-LANDBANK.mp4" type="video/mp4"> 
-            Your browser does not support the video tag.
-        </video>
     </div>
     <div class="container">
-        <header class="navbar">
-            <div class="navbar-left">
-                <img src="assets/LANDBANK.png" alt="Landbank Logo" class="navbar-logo">
-                <span class="navbar-title">LBMS PORTAL</span>
-            </div>
-            <nav class="navbar-links">
-                <a href="home.html">HOME</a>
-                <a href="#">ABOUT</a>
-                <a href="#">SERVICES</a>
-                <a href="#">CONTACT</a>
-            </nav>
-        </header>
         <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-step completed">
@@ -45,7 +29,7 @@
                 <div class="step-label">Review</div>
             </div>
         </div>
-        <form id="registration1-form" class="profile-form">
+        <form id="registration2-form" class="profile-form">
             <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> CUSTOMER INFORMATION SHEET FOR INDIVIDUAL CUSTOMER</h2>
             <hr style="border: 0; border-top: 1.5px solid #545454; margin: 10px 0 20px 0;">
             <section class="section-employment">
@@ -113,19 +97,9 @@
                         <input type="text" id="tinId" name="tinId">
                         <label for="tinId">TIN ID</label>
                     </div>
-                </div>
-                <div class="row">
                     <div class="floating-label-group">
-                        <input type="text" id="employerLastName" name="employerLastName">
-                        <label for="employerLastName">Last Name</label>
-                    </div>
-                    <div class="floating-label-group">
-                        <input type="text" id="employerFirstName" name="employerFirstName">
-                        <label for="employerFirstName">First Name</label>
-                    </div>
-                    <div class="floating-label-group">
-                        <input type="text" id="employerMiddleName" name="employerMiddleName">
-                        <label for="employerMiddleName">Middle Name</label>
+                        <input type="text" id="companyNameame" name="companyNameame">
+                        <label for="companyNameame">Company Name</label>
                     </div>
                 </div>
                 <div class="row">
@@ -206,8 +180,13 @@
                 </div>
             </section>
             <div class="form-actions">
-                <button type="button" class="cancel-btn">⟲ CANCEL</button>
-                <button type="submit" class="next-btn">NEXT</button>
+                <div class="left-buttons">
+                    <button type="button" class="cancel-btn">⟲ CANCEL</button>
+                </div>
+                <div class="right-buttons">
+                    <button type="button" class="back-btn">← BACK</button>
+                    <button type="submit" class="next-btn">NEXT</button>
+                </div>
             </div>
         </form>
     </div>

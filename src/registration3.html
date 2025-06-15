@@ -9,18 +9,6 @@
 <body>
     <div class="background-overlay"></div>
     <div class="container">
-        <header class="navbar">
-            <div class="navbar-left">
-                <img src="assets/LANDBANK.png" alt="Landbank Logo" class="navbar-logo">
-                <span class="navbar-title">LBMS PORTAL</span>
-            </div>
-            <nav class="navbar-links">
-                <a href="home.html">HOME</a>
-                <a href="#">ABOUT</a>
-                <a href="#">SERVICES</a>
-                <a href="#">CONTACT</a>
-            </nav>
-        </header>
         <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-step completed">
@@ -98,7 +86,7 @@
                     </div>
                     <div class="row relationship-entry">
                         <div class="floating-label-group">
-                            <select name="relationship[]" required>
+                            <select name="relationship[]">
                                 <option value="" disabled selected hidden>▼</option>
                                 <option value="Father">Father</option>
                                 <option value="Mother">Mother</option>
@@ -139,8 +127,13 @@
                 <button type="button" class="add-btn" onclick="addRelationshipEntry()">+ Add Relationship</button>
             </section>
             <div class="form-actions">
-                <button type="button" class="cancel-btn">⟲ CANCEL</button>
-                <button type="submit" class="next-btn">NEXT</button>
+                <div class="left-buttons">
+                    <button type="button" class="cancel-btn">⟲ CANCEL</button>
+                </div>
+                <div class="right-buttons">
+                    <button type="button" class="back-btn">← BACK</button>
+                    <button type="submit" class="next-btn">NEXT</button>
+                </div>
             </div>
         </form>
     </div>

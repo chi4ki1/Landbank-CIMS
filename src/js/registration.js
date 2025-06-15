@@ -5,6 +5,11 @@ function saveFormData(formId) {
     const data = {};
     
     for (let [key, value] of formData.entries()) {
+        // Skip empty values for registration3-form
+        if (formId === 'registration3-form' && !value) {
+            continue;
+        }
+        
         if (key.endsWith('[]')) {
             // Handle array inputs
             const baseKey = key.slice(0, -2);
@@ -47,8 +52,42 @@ function loadFormData(formId) {
 function handleFormSubmit(event, nextPage) {
     event.preventDefault();
     const form = event.target;
+    
+    // For registration3-form, allow submission even if empty
+    if (form.id === 'registration3-form') {
+        saveFormData(form.id);
+        window.location.href = 'registrationPrint.html';
+        return;
+    }
+    
+    // For registrationPrint-form, proceed to success page
+    if (form.id === 'registrationPrint-form') {
+        if (document.getElementById('termsCheck').checked) {
+            window.location.href = 'registrationSuccess.html';
+            return;
+        } else {
+            alert('Please accept the terms and conditions to proceed.');
+            return;
+        }
+    }
+    
+    // For other forms, proceed with normal validation
     saveFormData(form.id);
     window.location.href = nextPage;
+}
+
+// Handle back button navigation
+function handleBack() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const backPages = {
+        'registration2.html': 'registration1.html',
+        'registration3.html': 'registration2.html',
+        'registrationPrint.html': 'registration3.html'
+    };
+    
+    if (backPages[currentPage]) {
+        window.location.href = backPages[currentPage];
+    }
 }
 
 // Handle cancel button
@@ -65,7 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = {
         'registration1-form': 'registration2.html',
         'registration2-form': 'registration3.html',
-        'registration3-form': 'registrationSuccess.html'
+        'registration3-form': 'registrationPrint.html',
+        'registrationPrint-form': 'registrationSuccess.html'
     };
 
     // Initialize each form
@@ -84,6 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const cancelBtn = form.querySelector('.cancel-btn');
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', handleCancel);
+            }
+
+            // Set up back button
+            const backBtn = form.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', handleBack);
             }
         }
     }
