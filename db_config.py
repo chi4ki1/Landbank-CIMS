@@ -3,5 +3,5 @@ db_config = {
     'port': '3306',
     'user': 'root',
     'password': 'LandBank@2025',       # update this
-    'database': 'landbank'
+    'database': 'database_landbank'
 }

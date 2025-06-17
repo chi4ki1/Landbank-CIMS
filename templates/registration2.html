@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LBMS Portal - Registration (Step 2)</title>
-    <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="static/registration.css">
 </head>
 <body>
     <div class="background-overlay">
@@ -30,10 +30,10 @@
             </div>
         </div>
         <form id="registration2-form" class="profile-form">
-            <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> CUSTOMER INFORMATION SHEET FOR INDIVIDUAL CUSTOMER</h2>
+            <h2><span class="icon"><img src="static/assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> CUSTOMER INFORMATION SHEET FOR INDIVIDUAL CUSTOMER</h2>
             <hr style="border: 0; border-top: 1.5px solid #545454; margin: 10px 0 20px 0;">
             <section class="section-employment">
-                <h3><span class="icon"><img src="assets/employment-icon.png" alt="Employment Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>Employment Information</h3>
+                <h3><span class="icon"><img src="static/assets/employment-icon.png" alt="Employment Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>Employment Information</h3>
                 <div class="row">
                     <div class="floating-label-group">
                         <select name="occupation" id="occupation" required>
@@ -98,7 +98,7 @@
                         <label for="tinId">TIN ID</label>
                     </div>
                     <div class="floating-label-group">
-                        <input type="text" id="companyNameame" name="companyNameame">
+                        <input type="text" id="companyName" name="companyName">
                         <label for="companyNameame">Company Name</label>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
             </section>
             <hr style="border: 0; border-top: 1.5px solid #545454; margin: 25px 0 25px 0;">
             <section class="section-financial">
-                <h3><span class="icon"><img src="assets/finance-icon.png" alt="Financial Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>Financial Record</h3>
+                <h3><span class="icon"><img src="static/assets/finance-icon.png" alt="Financial Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>Financial Record</h3>
                 <div class="row">
                     <div class="form-group" style="flex:2;">
                         <label style="font-family: Inter; font-size: 1rem; color: #184d3a; font-weight: 500; margin-bottom: 10px;">Source of Wealth <span style="font-size:0.9em; color:#737373;">(1-Primary, 2-Secondary, 3-Other Source)</span></label>
@@ -190,7 +190,7 @@
             </div>
         </form>
     </div>
-    <script src="js/registration.js"></script>
+    <script src="static/js/registration.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkboxes = document.querySelectorAll('input[name="sourceOfWealth"]');
