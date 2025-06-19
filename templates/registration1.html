@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LBMS Portal - Registration</title>
-    <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='registration.css') }}">
 </head>
 <body>
-      <div class="background-overlay">
-  </div>
+    <div class="background-overlay"></div>
+
     <div class="container">
         <!-- Progress Bar -->
         <div class="progress-container">
@@ -29,11 +29,24 @@
                 <div class="step-label">Review</div>
             </div>
         </div>
-        <form id="registration1-form" class="profile-form">
-            <h2><span class="icon"><img src="assets/personal_icon.png" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span> CUSTOMER INFORMATION SHEET FOR INDIVIDUAL CUSTOMER</h2>
+
+        <!-- FORM START -->
+        <form id="registration1-form" class="profile-form" method="POST">
+
+            <h2>
+                <span class="icon"><img src="{{ url_for('static', filename='assets/personal_icon.png') }}" alt="Profile Icon" style="width: 1.3em; vertical-align: middle;"></span>
+                CUSTOMER INFORMATION SHEET FOR INDIVIDUAL CUSTOMER
+            </h2>
+
             <hr style="border: 0; border-top: 1.5px solid #545454; margin: 10px 0 20px 0;">
+
+            <!-- PERSONAL INFORMATION -->
             <section class="section-name">
-                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>PERSONAL INFORMATION</h3>
+                <h3>
+                    <span class="icon"><img src="{{ url_for('static', filename='assets/info_icon.png') }}" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span>
+                    <span style="color:#b90404;">*</span> PERSONAL INFORMATION
+                </h3>
+
                 <div class="row">
                     <div class="floating-label-group">
                         <input type="text" id="lastName" name="lastName" required>
@@ -43,24 +56,24 @@
                         <input type="text" id="firstName" name="firstName" required>
                         <label for="firstName">First Name</label>
                     </div>
-                    <div class="floating-label-group">
-                        <input type="text" id="middleName" name="middleName">
-                        <label for="middleName">Middle Name</label>
-                    </div>
                 </div>
+
                 <div class="row">
                     <div class="floating-label-group">
                         <input type="date" id="dob" name="dob" required>
                         <label for="dob">Date of Birth</label>
                     </div>
                     <div class="floating-label-group">
-                        <input type="text" id="nationality" name="nationality">
+                        <input type="text" id="nationality" name="nationality" required>
                         <label for="nationality">Nationality</label>
                     </div>
                     <div class="floating-label-group">
-                        <input type="text" id="citizenship" name="citizenship">
+                        <input type="text" id="citizenship" name="citizenship" required>
                         <label for="citizenship">Citizenship</label>
                     </div>
+                </div>
+
+                <div class="row">
                     <div class="floating-label-group">
                         <select id="sex" name="sex" required>
                             <option value="" disabled selected hidden>▼</option>
@@ -75,53 +88,62 @@
                             <option value="Single">Single</option>
                             <option value="Married">Married</option>
                             <option value="Widowed">Widowed</option>
-                            <option value="Divorced">Divorced</option>
+                            <option value="Separated">Separated</option>
                         </select>
                         <label for="civilStatus">Civil Status</label>
                     </div>
                     <div class="floating-label-group">
-                        <input type="number" id="children" name="children" min="0">
+                        <input type="number" id="children" name="children" min="0" required>
                         <label for="children">No. of Children</label>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="floating-label-group">
-                        <input type="text" id="placeOfBirth" name="placeOfBirth">
+                        <input type="text" id="placeOfBirth" name="placeOfBirth" required>
                         <label for="placeOfBirth">Place of Birth</label>
                     </div>
                     <div class="floating-label-group">
-                        <input type="text" id="address" name="address">
-                        <label for="address">Current Address (No./Street, Subd.,Brgy./District/Municipality/City/Province)</label>
+                        <input type="text" id="address" name="address" required>
+                        <label for="address">Current Address</label>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="floating-label-group">
-                        <input type="text" id="motherMaidenName" name="motherMaidenName">
+                        <input type="text" id="motherMaidenName" name="motherMaidenName" required>
                         <label for="motherMaidenName">Mother's Maiden Name</label>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="floating-label-group">
-                        <input type="number" id="age" name="age" min="18" max="100">
-                        <label for="age">Age</label>
-                    </div>
-                </div>
+
             </section>
+
+            <!-- CONTACT INFORMATION -->
             <section class="section-contact">
-                <h3><span class="icon"><img src="assets/contact_icon.png" alt="Contact Icon" style="width: 2em; vertical-align: middle;"></span><span style="color:#b90404;">*</span>CONTACT INFORMATION</h3> 
+                <h3>
+                    <span class="icon"><img src="{{ url_for('static', filename='assets/contact_icon.png') }}" alt="Contact Icon" style="width: 2em; vertical-align: middle;"></span>
+                    <span style="color:#b90404;">*</span> CONTACT INFORMATION
+                </h3> 
+
                 <div class="row">
                     <div class="floating-label-group">
-                        <input type="email" id="email" name="email">
+                        <input type="email" id="email" name="email" required>
                         <label for="email">Email</label>
                     </div>
                     <div class="floating-label-group">
-                        <input type="tel" id="telephone" name="telephone">
+                        <input type="tel" id="telephone" name="telephone" required>
                         <label for="telephone">Phone Number</label>
                     </div>
                 </div>
             </section>
+
+            <!-- SPOUSE INFORMATION -->
             <section class="section-spouse">
-                <h3><span class="icon"><img src="assets/info_icon.png" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span> SPOUSE</h3>
+                <h3>
+                    <span class="icon"><img src="{{ url_for('static', filename='assets/info_icon.png') }}" alt="Personal Icon" style="width: 2em; vertical-align: middle;"></span>
+                    SPOUSE
+                </h3>
+
                 <div class="row">
                     <div class="floating-label-group">
                         <input type="text" id="spouseLastName" name="spouseLastName">
@@ -131,11 +153,8 @@
                         <input type="text" id="spouseFirstName" name="spouseFirstName">
                         <label for="spouseFirstName">First Name</label>
                     </div>
-                    <div class="floating-label-group">
-                        <input type="text" id="spouseMiddleName" name="spouseMiddleName">
-                        <label for="spouseMiddleName">Middle Name</label>
-                    </div>
                 </div>
+
                 <div class="row">
                     <div class="floating-label-group">
                         <input type="date" id="spouseDob" name="spouseDob">
@@ -147,12 +166,15 @@
                     </div>
                 </div>
             </section>
+
             <div class="form-actions">
                 <button type="button" class="cancel-btn">⟲ CANCEL</button>
                 <button type="submit" class="next-btn">NEXT</button>
             </div>
         </form>
+        <!-- FORM END -->
     </div>
-    <script src="js/registration.js"></script>
+
+    <script src="{{ url_for('static', filename='js/registration.js') }}"></script>
 </body>
 </html>
