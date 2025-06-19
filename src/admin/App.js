@@ -9,6 +9,8 @@ const {
     Snackbar,
     Alert
 } = MaterialUI;
+import { SearchBar } from './components/SearchBar';
+import { FilterDropdown } from './components/FilterDropdown';
 
 export function App() {
     const [customers, setCustomers] = useState([]);
@@ -153,7 +155,7 @@ export function App() {
                 <Typography variant="h4" component="h1">
                     Customer Management
                 </Typography>
-                <Box className="search-filter-container">
+                <Box className="search-filter-container" sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', mb: 2 }}>
                     <SearchBar 
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}

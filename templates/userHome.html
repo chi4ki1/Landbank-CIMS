@@ -11,6 +11,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='registration.css') }}">
     <style>
         /* Custom styles for userHome.html */
+        .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('/static/assets/landbank-BG.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+
         body {
             background-color: #f8f9fa;
             /* Prioritize Inter, fall back to robust system fonts */
@@ -125,6 +138,37 @@
             background-color: #e9ecef;
             border-radius: 5px;
             margin-top: 10px;
+        }
+        /* Shiny Button Effect (color-adaptive) */
+        .shiny-btn {
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            border: none;
+            outline: none;
+            transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+        }
+        .shiny-btn:before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+            z-index: 1;
+        }
+        .shiny-btn:hover:before {
+            left: 100%;
+        }
+        .shiny-btn:active {
+            transform: translateY(1px);
+        }
+        .update-btn.shiny-btn {
+            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+        }
+        .logout-btn.shiny-btn {
+            background: linear-gradient(90deg, #dc3545 0%, #b02a37 100%);
         }
     </style>
 </head>
@@ -252,11 +296,11 @@
             </section>
 
             <div class="form-actions">
-                <button type="button" class="action-btn update-btn" onclick="alert('Update functionality coming soon!');">
+                <button type="button" class="action-btn update-btn shiny-btn" onclick="alert('Update functionality coming soon!');">
                     <i class="fas fa-edit"></i> Update Account
                 </button>
                  <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
-                     <button type="submit" class="action-btn logout-btn">
+                     <button type="submit" class="action-btn logout-btn shiny-btn">
                      <i class="fas fa-sign-out-alt"></i> Logout
                       </button>
                 </form>
