@@ -1,12 +1,24 @@
+# START OF MODIFICATIONS - PART 1
+
 import mysql.connector, os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import uuid # For generating unique IDs like cust_no and other VARCHAR IDs
+import uuid
 from werkzeug.utils import secure_filename
 from flask import make_response
+from werkzeug.security import generate_password_hash, check_password_hash # ADD THIS NEW IMPORT
 
 app = Flask(__name__)
-# IMPORTANT: Change this to a strong, unique secret key for production environments
-app.secret_key = 'your_super_secret_key_here'
+
+# IMPORTANT: Load secret key from environment variable for production
+# If FLASK_SECRET_KEY is not set, it will fall back to a default (change in production!)
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_super_secret_key_here') # UPDATE THIS LINE
+# For development, you can keep 'your_super_secret_key_here' as a fallback.
+# For production, set this environment variable:
+# On Linux/macOS: export FLASK_SECRET_KEY='a_very_long_and_random_string'
+# On Windows (Cmd): set FLASK_SECRET_KEY=a_very_long_and_random_string
+# On Windows (PowerShell): $env:FLASK_SECRET_KEY='a_very_long_and_random_string'
+
+# END OF MODIFICATIONS - PART 1
 
 # Database configuration
 db_config = {
@@ -193,6 +205,72 @@ def no_cache(view):
         return response
     no_cache_wrapper.__name__ = view.__name__
     return no_cache_wrapper
+
+
+# START OF MODIFICATIONS - PART 2: NEW HELPER FUNCTIONS
+
+def generate_next_cust_no(cursor):
+    """
+    Generates the next sequential customer number (e.g., C001, C002, ..., C015, C016).
+    Assumes cust_no always starts with 'C' followed by numbers.
+    """
+    try:
+        cursor.execute("SELECT MAX(CAST(SUBSTRING(cust_no, 2) AS UNSIGNED)) AS max_cust_num FROM customer")
+        result = cursor.fetchone()
+        
+        max_num = result['max_cust_num'] if result and result['max_cust_num'] is not None else 0
+        
+        next_num = max_num + 1
+        
+        # Format the number with leading zeros to ensure three digits (e.g., 1 -> 001, 15 -> 015)
+        new_cust_no = f"C{next_num:03d}"
+        
+        return new_cust_no
+    except Exception as e:
+        print(f"Error generating next cust_no: {e}")
+        return None
+
+def get_or_insert_occupation(cursor, occ_type, bus_nature):
+    """
+    Checks if an occupation with the given type and nature exists.
+    If yes, returns its occ_id. If no, inserts a new occupation,
+    generates a new occ_id, and returns it.
+    """
+    cursor.execute("SELECT occ_id FROM occupation WHERE occ_type = %s AND bus_nature = %s", (occ_type, bus_nature))
+    result = cursor.fetchone()
+    if result:
+        return result['occ_id']
+    else:
+        cursor.execute("SELECT MAX(CAST(SUBSTRING(occ_id, 3) AS UNSIGNED)) AS max_occ_num FROM occupation")
+        max_num_res = cursor.fetchone()
+        max_num = max_num_res['max_occ_num'] if max_num_res and max_num_res['max_occ_num'] is not None else 0
+        new_occ_id = f"OC{max_num + 1:02d}" # Format like OC01, OC02
+
+        cursor.execute("INSERT INTO occupation (occ_id, occ_type, bus_nature) VALUES (%s, %s, %s)", (new_occ_id, occ_type, bus_nature))
+        return new_occ_id
+
+def get_or_insert_financial_record(cursor, source_wealth, mon_income, ann_income):
+    """
+    Checks if a financial record with the given details exists.
+    If yes, returns its fin_code. If no, inserts a new record,
+    generates a new fin_code, and returns it.
+    """
+    cursor.execute("SELECT fin_code FROM financial_record WHERE source_wealth = %s AND mon_income = %s AND ann_income = %s", (source_wealth, mon_income, ann_income))
+    result = cursor.fetchone()
+    if result:
+        return result['fin_code']
+    else:
+        cursor.execute("SELECT MAX(CAST(SUBSTRING(fin_code, 2) AS UNSIGNED)) AS max_fin_num FROM financial_record")
+        max_num_res = cursor.fetchone()
+        max_num = max_num_res['max_fin_num'] if max_num_res and max_num_res['max_fin_num'] is not None else 0
+        new_fin_code = f"F{max_num + 1}" # Format like F1, F2 (adjust to F01, F02 if preferred by changing f"F{max_num + 1:02d}")
+
+        cursor.execute("INSERT INTO financial_record (fin_code, source_wealth, mon_income, ann_income) VALUES (%s, %s, %s, %s)", (new_fin_code, source_wealth, mon_income, ann_income))
+        return new_fin_code
+
+# END OF MODIFICATIONS - PART 2
+
+
 
 # --- ROUTE: first landing page ---
 @app.route('/')
@@ -449,21 +527,32 @@ def submit_registration():
             conn.close()
 
 # --- Helper Function Definitions (Called from submit_registration) ---
+# START OF MODIFICATIONS - PART 3: UPDATED insert_credentials
+
 def insert_credentials(cursor, cust_no, data):
     """
-    Inserts user credentials into the credentials table.
+    Inserts user credentials into the credentials table, hashing the password.
+    Assumes `data` contains 'email' and a *plain-text* 'password' field.
     """
     username = data.get('email')
-    # IMPORTANT: In a real application, you MUST hash passwords.
-    # For now, using a default password based on cust_no for demonstration.
-    password = f"defaultPass{cust_no}"
+    plain_password = data.get('password')
+
+    # Hash the password using werkzeug.security
+    if plain_password:
+        hashed_password = generate_password_hash(plain_password)
+    else:
+        # Handle case where no password is provided (e.g., generate a random one or raise error)
+        # For now, let's hash an empty string or raise an error. Better to enforce password.
+        hashed_password = generate_password_hash('') # Hashing an empty string
+        print("Warning: No plain password provided for hashing in insert_credentials.")
 
     sql = """
         INSERT INTO credentials (cust_no, username, password)
         VALUES (%s, %s, %s)
     """
-    cursor.execute(sql, (cust_no, username, password))
+    cursor.execute(sql, (cust_no, username, hashed_password)) # Store the hashed password
 
+# END OF MODIFICATIONS - PART 3
 
 # --- UserHome after login---
 @app.route('/userform')
@@ -585,16 +674,20 @@ def logout():
 
 
 # ---ROUTE: Login User/Admin ---
+# START OF MODIFICATIONS - PART 5: UPDATED login ROUTE
+
+# ---ROUTE: Login User/Admin ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('username')
         password_input = request.form.get('password')
 
+        # Admin login (keep separate if specific admin credentials are hardcoded)
         if email == 'admin@gmail.com' and password_input == 'LandBank@2025':
             session['admin'] = True
             session['user_email'] = email
-            flash('Logged in successfully!', 'success')
+            flash('Logged in as Admin successfully!', 'success')
             return redirect(url_for('admin_dashboard'))
 
         conn = None
@@ -615,13 +708,14 @@ def login():
             """, (email,))
             user = cursor.fetchone()
 
-            if user and user['password'] == password_input:
+            # Check if user exists and if the provided password matches the stored hash
+            if user and check_password_hash(user['password'], password_input): # Use check_password_hash
                 session['user'] = user['custname']
                 session['user_email'] = user['username']
                 session['cust_no'] = user['cust_no']
 
                 flash('Logged in successfully!', 'success')
-                return redirect(url_for('home'))  # Changed from userHome to home
+                return redirect(url_for('home')) # Redirect to user dashboard/home
             else:
                 flash('Invalid username or password.', 'danger')
                 return render_template('login.html', error='Invalid username or password.')
@@ -641,6 +735,8 @@ def login():
                 conn.close()
 
     return render_template('login.html')
+
+# END OF MODIFICATIONS - PART 5
 
 @app.route('/registrationSuccess')
 def registration_success():
@@ -1466,7 +1562,102 @@ def upload_photo():
         flash('Invalid file type', 'error')
         return redirect(request.referrer)
     
+# START OF MODIFICATIONS - PART 4: UPDATED r1 ROUTE
 
+# --- ROUTE: Register Customer Step 1 ---
+@app.route('/r1', methods=['GET', 'POST'])
+def r1():
+    if request.method == 'POST':
+        conn = None
+        cursor = None
+        try:
+            conn = get_db_connection()
+            if not conn:
+                flash('Database connection failed.', 'danger')
+                return render_template('r1.html', error='Database connection failed.')
+
+            cursor = conn.cursor(dictionary=True)
+
+            # Generate the new cust_no
+            cust_no = generate_next_cust_no(cursor)
+            if not cust_no:
+                flash('Failed to generate customer number. Please try again.', 'danger')
+                return render_template('r1.html')
+
+            # Extract form data
+            data = {
+                'cust_no': cust_no, # Use the generated cust_no
+                'custname': request.form['custname'],
+                'datebirth': request.form['datebirth'],
+                'nationality': request.form['nationality'],
+                'citizenship': request.form['citizenship'],
+                'custsex': request.form['custsex'],
+                'placebirth': request.form['placebirth'],
+                'civilstatus': request.form['civilstatus'],
+                'num_children': int(request.form['num_children']),
+                'mmaiden_name': request.form['mmaiden_name'],
+                'cust_address': request.form['cust_address'],
+                'email_address': request.form['email_address'],
+                'contact_no': request.form['contact_no'],
+                'occ_type': request.form['occ_type'], # From form for occupation
+                'bus_nature': request.form['bus_nature'], # From form for occupation
+                'source_wealth': request.form['source_wealth'], # From form for financial
+                'mon_income': request.form['mon_income'], # From form for financial
+                'ann_income': request.form['ann_income'], # From form for financial
+                'password': request.form.get('password', 'default_password_for_new_user') # Get password from form or use default
+            }
+
+            # Get or insert occupation and financial record, ensuring unique IDs
+            occ_id = get_or_insert_occupation(cursor, data['occ_type'], data['bus_nature'])
+            fin_code = get_or_insert_financial_record(cursor, data['source_wealth'], data['mon_income'], data['ann_income'])
+
+            if not occ_id or not fin_code:
+                flash('Error processing occupation or financial data. Please check inputs.', 'danger')
+                conn.rollback() # Rollback if related data insertion fails
+                return render_template('r1.html')
+
+            # Insert into customer table
+            sql_customer = """
+                INSERT INTO customer (
+                    cust_no, custname, datebirth, nationality, citizenship, custsex, placebirth,
+                    civilstatus, num_children, mmaiden_name, cust_address, email_address,
+                    contact_no, occ_id, fin_code, status
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'Active')
+            """
+            cursor.execute(sql_customer, (
+                data['cust_no'], data['custname'], data['datebirth'], data['nationality'],
+                data['citizenship'], data['custsex'], data['placebirth'], data['civilstatus'],
+                data['num_children'], data['mmaiden_name'], data['cust_address'],
+                data['email_address'], data['contact_no'], occ_id, fin_code
+            ))
+
+            # Insert into credentials table using the generated cust_no and hashed password
+            insert_credentials(cursor, data['cust_no'], {'email': data['email_address'], 'password': data['password']})
+
+            conn.commit()
+            flash('Registration successful!', 'success')
+            return redirect(url_for('login')) # Redirect to login page
+
+        except mysql.connector.Error as err:
+            if conn:
+                conn.rollback() # Rollback changes if an error occurs
+            print(f"Database error during registration: {err}")
+            flash(f'An error occurred during registration: {err}', 'danger')
+            return render_template('r1.html', error=f"Database error during registration: {err}")
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            print(f"Registration error: {e}")
+            flash('An unexpected error occurred during registration.', 'danger')
+            return render_template('r1.html', error='An unexpected error occurred during registration.')
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+    return render_template('r1.html')
+
+# END OF MODIFICATIONS - PART 4
 
 
 
