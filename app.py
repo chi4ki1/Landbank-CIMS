@@ -181,60 +181,67 @@ def _ensure_database_schema():
         if conn:
             conn.close()
 
-
-# --- Page Routes (existing routes, unchanged) ---
+# --- ROUTE: first landing page ---
 @app.route('/')
 def landing():
     """Renders the landing page."""
     return render_template('landing.html')
 
+# ---ROUTE: home ---
 @app.route('/home')
 def home():
     """Renders the home page."""
     return render_template('home.html')
 
+# ---ROUTE: about ---
 @app.route('/about')
 def about():
     """Renders the about page."""
     return render_template('about.html')
 
+# ---ROUTE: service ---
 @app.route('/services')
 def services():
     """Renders the services page."""
     return render_template('services.html')
 
+# ---ROUTE: contact ---
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
     return render_template('contact.html')
 
+# ---ROUTE: Registration Print ---
 @app.route('/registrationPrint')
 def registrationPrint():
     """Renders the registration print/summary page."""
     return render_template('registrationPrint.html')
 
+# ---ROUTE: sign-up landing page ---
 @app.route('/register')
 def register():
     """Renders the registration page (initial entry point)."""
     return render_template('register.html')
 
-# --- Registration Flow Pages (GET requests only, data handled by JS) ---
+# --- reg 1 ---
 @app.route('/registration1', methods=['GET'])
 def registration1():
     """Renders the first step of the registration form."""
     return render_template('registration1.html')
 
+# ---ROUTE: reg 2 ---
 @app.route('/registration2', methods=['GET'])
 def registration2():
     """Renders the second step of the registration form."""
     return render_template('registration2.html')
 
+# ---ROUTE: reg 3 ---
 @app.route('/registration3', methods=['GET'])
 def registration3():
     """Renders the third step of the registration form."""
     return render_template('registration3.html')
 
-
+# ---ROUTE: Submit registration ---
 @app.route('/submitRegistration', methods=['POST'])
 def submit_registration():
     """
@@ -427,7 +434,7 @@ def insert_credentials(cursor, cust_no, data):
     cursor.execute(sql, (cust_no, username, password))
 
 
-# --- Placeholder for other Flask routes and functions ---
+# --- UserHome after login---
 @app.route('/userHome')
 def userHome():
     if 'cust_no' not in session:
@@ -530,6 +537,7 @@ def userHome():
         if conn:
             conn.close()
 
+# ---ROUTE: Logouts ---
 @app.route('/logout', methods=['POST']) # Add methods=['POST'] here
 def logout():
     session.pop('user', None)
@@ -538,6 +546,7 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
+# ---ROUTE: Login User/Admin ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -600,9 +609,7 @@ def registration_success():
     """Renders the registration success page."""
     return render_template('registrationSuccess.html')
 
-
-# ... (your existing code above admin_dashboard) ...
-
+# ---ROUTE: Admin Dashboard ---
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if 'admin' not in session:
@@ -735,9 +742,8 @@ def admin_view_customer(cust_no):
             cursor.close()
         if conn:
             conn.close()
-# ... (your existing code, including admin_view_customer route) ...
 
-# --- NEW ROUTE: Admin Edit Customer Details ---
+# ---ROUTE: Admin Edit Customer Details ---
 @app.route('/admin/edit_customer/<string:cust_no>', methods=['GET', 'POST'])
 def admin_edit_customer(cust_no):
     if 'admin' not in session:
@@ -758,23 +764,226 @@ def admin_edit_customer(cust_no):
 
         if request.method == 'POST':
             # --- Handle form submission for UPDATE ---
-            # This is where you will add the logic to process the form data
-            # and update the database. For now, we'll just redirect after a message.
-            flash('Customer update logic is not yet implemented for POST. Displaying current data.', 'info')
-            # You will need to implement:
-            # 1. Get form data: request.form.get('fieldname')
-            # 2. Prepare SQL UPDATE statements for customer, spouse, employment, financial, etc.
-            # 3. Execute updates in a transaction.
-            # 4. Handle success/failure with flashes.
-            # Example (conceptual, do not use directly without full implementation):
-            # new_name = request.form.get('custname')
-            # cursor.execute("UPDATE customer SET custname = %s WHERE cust_no = %s", (new_name, cust_no))
-            # conn.commit()
-            # flash('Customer details updated successfully!', 'success')
-            # return redirect(url_for('admin_view_customer', cust_no=cust_no))
-            pass # Keep execution flowing to GET part for now
-        
-        # --- Handle GET request (and fall-through from POST) for displaying current data ---
+            conn.start_transaction()
+            try:
+                # Retrieve all form data
+                # Customer Details
+                custname = request.form.get('custname')
+                email_address = request.form.get('email_address')
+                contact_no = request.form.get('contact_no')
+                datebirth = request.form.get('datebirth')
+                nationality = request.form.get('nationality')
+                citizenship = request.form.get('citizenship')
+                custsex = request.form.get('custsex')
+                placebirth = request.form.get('placebirth')
+                civilstatus = request.form.get('civilstatus')
+                num_children = int(request.form.get('num_children', 0) or 0)
+                mmaiden_name = request.form.get('mmaiden_name')
+                cust_address = request.form.get('cust_address')
+
+                # Occupation Details
+                occ_type = request.form.get('occ_type')
+                bus_nature = request.form.get('bus_nature')
+
+                # Financial Record Details
+                source_wealth = request.form.get('source_wealth')
+                mon_income = request.form.get('mon_income')
+                ann_income = request.form.get('ann_income')
+
+                # Spouse Details
+                sp_name = request.form.get('sp_name')
+                sp_datebirth = request.form.get('sp_datebirth')
+                sp_profession = request.form.get('sp_profession')
+
+                # Employer Details (if employed)
+                tin_id = request.form.get('tin_id')
+                empname = request.form.get('empname')
+                emp_address = request.form.get('emp_address')
+                phonefax_no = request.form.get('phonefax_no')
+                job_title = request.form.get('job_title')
+                emp_date = request.form.get('emp_date') or None # Use None for empty date string
+
+                # Company Affiliations (multiple)
+                depositor_roles = request.form.getlist('depositor_role[]')
+                dep_compnames = request.form.getlist('dep_compname[]')
+
+                # Existing Banks (multiple)
+                bank_names = request.form.getlist('bank_name[]')
+                branches = request.form.getlist('branch[]')
+                acc_types = request.form.getlist('acc_type[]')
+
+                # Public Official Relationships (multiple)
+                gov_int_names = request.form.getlist('gov_int_name[]')
+                official_positions = request.form.getlist('official_position[]')
+                branch_orgnames = request.form.getlist('branch_orgname[]')
+                relation_descs = request.form.getlist('relation_desc[]')
+
+
+                # --- 1. Update Occupation and Financial Record tables first (or insert if new) ---
+                # Fetch existing occ_id and fin_code for the customer
+                cursor.execute("SELECT occ_id, fin_code FROM customer WHERE cust_no = %s", (cust_no,))
+                current_codes = cursor.fetchone()
+                current_occ_id = current_codes['occ_id'] if current_codes else None
+                current_fin_code = current_codes['fin_code'] if current_codes else None
+
+                # Update Occupation
+                if current_occ_id:
+                    sql_update_occ = """
+                        UPDATE occupation SET occ_type = %s, bus_nature = %s WHERE occ_id = %s
+                    """
+                    cursor.execute(sql_update_occ, (occ_type, bus_nature, current_occ_id))
+                else: # Should ideally not happen if customer already exists, but as a fallback
+                    new_occ_id = str(uuid.uuid4())[:10].upper()
+                    sql_insert_occ = "INSERT INTO occupation (occ_id, occ_type, bus_nature) VALUES (%s, %s, %s)"
+                    cursor.execute(sql_insert_occ, (new_occ_id, occ_type, bus_nature))
+                    current_occ_id = new_occ_id # Update occ_id to be used in customer table update
+
+                # Update Financial Record
+                if current_fin_code:
+                    sql_update_fin = """
+                        UPDATE financial_record SET source_wealth = %s, mon_income = %s, ann_income = %s WHERE fin_code = %s
+                    """
+                    cursor.execute(sql_update_fin, (source_wealth, mon_income, ann_income, current_fin_code))
+                else: # Fallback for new financial record
+                    new_fin_code = str(uuid.uuid4())[:10].upper()
+                    sql_insert_fin = "INSERT INTO financial_record (fin_code, source_wealth, mon_income, ann_income) VALUES (%s, %s, %s, %s)"
+                    cursor.execute(sql_insert_fin, (new_fin_code, source_wealth, mon_income, ann_income))
+                    current_fin_code = new_fin_code # Update fin_code to be used in customer table update
+
+
+                # --- 2. Update Customer table ---
+                sql_update_customer = """
+                    UPDATE customer SET
+                        custname = %s, email_address = %s, contact_no = %s,
+                        datebirth = %s, nationality = %s, citizenship = %s,
+                        custsex = %s, placebirth = %s, civilstatus = %s,
+                        num_children = %s, mmaiden_name = %s, cust_address = %s,
+                        occ_id = %s, fin_code = %s
+                    WHERE cust_no = %s
+                """
+                customer_update_data = (
+                    custname, email_address, contact_no, datebirth, nationality,
+                    citizenship, custsex, placebirth, civilstatus, num_children,
+                    mmaiden_name, cust_address, current_occ_id, current_fin_code, cust_no
+                )
+                cursor.execute(sql_update_customer, customer_update_data)
+
+                # --- 3. Update Spouse table ---
+                if civilstatus == 'Married' and sp_name and sp_datebirth and sp_profession:
+                    # Check if spouse record exists
+                    cursor.execute("SELECT COUNT(*) FROM spouse WHERE cust_no = %s", (cust_no,))
+                    if cursor.fetchone()[0] > 0:
+                        sql_update_spouse = """
+                            UPDATE spouse SET sp_name = %s, sp_datebirth = %s, sp_profession = %s
+                            WHERE cust_no = %s
+                        """
+                        cursor.execute(sql_update_spouse, (sp_name, sp_datebirth, sp_profession, cust_no))
+                    else:
+                        sql_insert_spouse = """
+                            INSERT INTO spouse (cust_no, sp_name, sp_datebirth, sp_profession)
+                            VALUES (%s, %s, %s, %s)
+                        """
+                        cursor.execute(sql_insert_spouse, (cust_no, sp_name, sp_datebirth, sp_profession))
+                else:
+                    # If not married or data removed, delete spouse record
+                    cursor.execute("DELETE FROM spouse WHERE cust_no = %s", (cust_no,))
+
+                # --- 4. Update Employer Details and Employment Details ---
+                if occ_type == 'Employed':
+                    # Get existing emp_id if any
+                    cursor.execute("SELECT emp_id FROM employment_details WHERE cust_no = %s", (cust_no,))
+                    emp_link = cursor.fetchone()
+                    existing_emp_id = emp_link['emp_id'] if emp_link else None
+
+                    if existing_emp_id:
+                        sql_update_employer = """
+                            UPDATE employer_details SET
+                                tin_id = %s, empname = %s, emp_address = %s,
+                                phonefax_no = %s, job_title = %s, emp_date = %s
+                            WHERE emp_id = %s
+                        """
+                        cursor.execute(sql_update_employer, (tin_id, empname, emp_address, phonefax_no, job_title, emp_date, existing_emp_id))
+                    else:
+                        # Insert new employer and link if none existed before
+                        new_emp_id = str(uuid.uuid4())[:10].upper()
+                        sql_insert_employer = """
+                            INSERT INTO employer_details (emp_id, occ_id, tin_id, empname, emp_address, phonefax_no, job_title, emp_date)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        """
+                        cursor.execute(sql_insert_employer, (new_emp_id, current_occ_id, tin_id, empname, emp_address, phonefax_no, job_title, emp_date))
+                        sql_insert_emp_link = "INSERT INTO employment_details (cust_no, emp_id) VALUES (%s, %s)"
+                        cursor.execute(sql_insert_emp_link, (cust_no, new_emp_id))
+                else:
+                    # If no longer employed, delete employer and employment details
+                    cursor.execute("SELECT emp_id FROM employment_details WHERE cust_no = %s", (cust_no,))
+                    emp_link_to_delete = cursor.fetchone()
+                    if emp_link_to_delete:
+                        cursor.execute("DELETE FROM employment_details WHERE cust_no = %s", (cust_no,))
+                        cursor.execute("DELETE FROM employer_details WHERE emp_id = %s", (emp_link_to_delete['emp_id'],))
+
+
+                # --- 5. Update Company Affiliations (delete all existing, then re-insert) ---
+                cursor.execute("DELETE FROM company_affiliation WHERE cust_no = %s", (cust_no,))
+                for i in range(len(depositor_roles)):
+                    if depositor_roles[i] and dep_compnames[i]:
+                        sql_insert_comp_aff = "INSERT INTO company_affiliation (cust_no, depositor_role, dep_compname) VALUES (%s, %s, %s)"
+                        cursor.execute(sql_insert_comp_aff, (cust_no, depositor_roles[i], dep_compnames[i]))
+
+                # --- 6. Update Existing Banks (delete all existing, then re-insert) ---
+                cursor.execute("DELETE FROM existing_bank WHERE cust_no = %s", (cust_no,))
+                # Also delete bank_details if no other customer uses it (optional, for cleanup)
+                # This requires more complex logic to check for references before deleting from bank_details
+                # For simplicity here, we'll only delete from existing_bank.
+                for i in range(len(bank_names)):
+                    if bank_names[i] and branches[i] and acc_types[i]:
+                        # Ensure bank_details exists or insert it
+                        sql_insert_bank_details = "INSERT IGNORE INTO bank_details (bank_code, bank_name, branch) VALUES (%s, %s, %s)"
+                        cursor.execute(sql_insert_bank_details, (bank_names[i], bank_names[i], branches[i])) # Assuming bank_name can be bank_code for simplicity
+
+                        sql_insert_existing_bank = "INSERT INTO existing_bank (cust_no, bank_code, acc_type) VALUES (%s, %s, %s)"
+                        cursor.execute(sql_insert_existing_bank, (cust_no, bank_names[i], acc_types[i]))
+
+                # --- 7. Update Public Official Relationships (delete all existing, then re-insert) ---
+                # Similar to company affiliations, delete all existing and re-insert
+                cursor.execute("DELETE FROM cust_po_relationship WHERE cust_no = %s", (cust_no,))
+                # Also consider deleting from public_official_details if no other customer refers to them
+                # This is more complex and might involve checking counts of references before deletion.
+                for i in range(len(gov_int_names)):
+                    if gov_int_names[i] and official_positions[i] and branch_orgnames[i] and relation_descs[i]:
+                        # Check if public official already exists by name/position/org
+                        sql_check_po = "SELECT gov_int_id FROM public_official_details WHERE gov_int_name = %s AND official_position = %s AND branch_orgname = %s"
+                        cursor.execute(sql_check_po, (gov_int_names[i], official_positions[i], branch_orgnames[i]))
+                        po_id_result = cursor.fetchone()
+                        
+                        po_id = None
+                        if po_id_result:
+                            po_id = po_id_result['gov_int_id']
+                        else:
+                            # Insert new public official if not found
+                            po_id = str(uuid.uuid4())[:10].upper()
+                            sql_insert_po = "INSERT INTO public_official_details (gov_int_id, gov_int_name, official_position, branch_orgname) VALUES (%s, %s, %s, %s)"
+                            cursor.execute(sql_insert_po, (po_id, gov_int_names[i], official_positions[i], branch_orgnames[i]))
+
+                        sql_insert_po_rel = "INSERT INTO cust_po_relationship (cust_no, gov_int_id, relation_desc) VALUES (%s, %s, %s)"
+                        cursor.execute(sql_insert_po_rel, (cust_no, po_id, relation_descs[i]))
+
+                conn.commit()
+                flash('Customer details updated successfully!', 'success')
+                return redirect(url_for('admin_view_customer', cust_no=cust_no))
+
+            except mysql.connector.Error as err:
+                conn.rollback()
+                print(f"Database error during customer update: {err}")
+                flash(f'An error occurred during customer update: {err}', 'danger')
+                return redirect(url_for('admin_edit_customer', cust_no=cust_no))
+            except Exception as e:
+                conn.rollback()
+                print(f"Unexpected error during customer update: {e}")
+                flash(f'An unexpected error occurred: {e}', 'danger')
+                return redirect(url_for('admin_edit_customer', cust_no=cust_no))
+
+
+        # --- Handle GET request (and fall-through from POST on error) for displaying current data ---
         # Fetch Customer Information
         cursor.execute("""
             SELECT c.*, o.occ_type, o.bus_nature, f.source_wealth, f.mon_income, f.ann_income
@@ -842,11 +1051,11 @@ def admin_edit_customer(cust_no):
         return render_template('admin_edit_customer.html', customer_data=customer_data)
 
     except mysql.connector.Error as err:
-        print(f"Database error in admin_edit_customer: {err}")
+        print(f"Database error in admin_edit_customer (GET/initial load): {err}")
         flash(f'An error occurred while fetching customer data: {err}', 'danger')
         return redirect(url_for('admin_dashboard'))
     except Exception as e:
-        print(f"Error in admin_edit_customer: {e}")
+        print(f"Error in admin_edit_customer (GET/initial load): {e}")
         flash('An unexpected error occurred while loading customer details for editing.', 'danger')
         return redirect(url_for('admin_dashboard'))
     finally:
@@ -856,9 +1065,198 @@ def admin_edit_customer(cust_no):
             conn.close()
 
 
-# ... (your existing code, including admin_edit_customer route) ...
+# --- ROUTE: dmin add customer ---
+@app.route('/admin_add_customer', methods=['POST'])
+def admin_add_customer():
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            flash('Database connection failed.', 'danger')
+            return redirect(url_for('admin_dashboard'))
 
-# --- NEW ROUTE: Delete Customer ---
+        cursor = conn.cursor()
+        conn.start_transaction()
+
+        # --- Generate Customer ID ---
+        cust_no = str(uuid.uuid4())[:10].upper()
+
+        # --- Personal Info ---
+        custname = f"{request.form['firstName']} {request.form['lastName']}"
+        datebirth = request.form['datebirth']
+        nationality = request.form['nationality']
+        citizenship = request.form['citizenship']
+        custsex = request.form['custsex']
+        placebirth = request.form['placebirth']
+        civilstatus = request.form['civilstatus']
+        num_children = int(request.form.get('num_children', 0) or 0)
+        mmaiden_name = request.form['mmaiden_name']
+        cust_address = request.form['cust_address']
+        email_address = request.form['email_address']
+        contact_no = request.form['contact_no']
+        status = request.form.get('status', 'Active')
+
+        # --- Occupation Info ---
+        occ_id = str(uuid.uuid4())[:10].upper()
+        occ_type = request.form['occupation']
+        bus_nature = request.form['natureOfBusiness']
+
+        # Insert into occupation table
+        cursor.execute("""
+            INSERT INTO occupation (occ_id, occ_type, bus_nature)
+            VALUES (%s, %s, %s)
+        """, (occ_id, occ_type, bus_nature))
+
+        # --- Financial Info ---
+        fin_code = str(uuid.uuid4())[:10].upper()
+        source_wealth = ', '.join(request.form.getlist('source_wealth[]'))
+        mon_income = request.form['monthly_income']
+        ann_income = request.form['annual_income']
+
+        # Insert into financial_record table
+        cursor.execute("""
+            INSERT INTO financial_record (fin_code, source_wealth, mon_income, ann_income)
+            VALUES (%s, %s, %s, %s)
+        """, (fin_code, source_wealth, mon_income, ann_income))
+
+        # --- Insert Customer ---
+        cursor.execute("""
+            INSERT INTO customer (
+                cust_no, custname, datebirth, nationality, citizenship, custsex,
+                placebirth, civilstatus, num_children, mmaiden_name, cust_address,
+                email_address, contact_no, occ_id, fin_code, status
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            cust_no, custname, datebirth, nationality, citizenship, custsex,
+            placebirth, civilstatus, num_children, mmaiden_name, cust_address,
+            email_address, contact_no, occ_id, fin_code, status
+        ))
+
+        # --- Spouse Info ---
+        if civilstatus == 'Married':
+            sp_name = f"{request.form.get('spouseFirstName', '')} {request.form.get('spouseLastName', '')}".strip()
+            sp_datebirth = request.form.get('spouseDob')
+            sp_profession = request.form.get('spouseProfession')
+            
+            if sp_name and sp_datebirth and sp_profession:
+                cursor.execute("""
+                    INSERT INTO spouse (cust_no, sp_name, sp_datebirth, sp_profession)
+                    VALUES (%s, %s, %s, %s)
+                """, (cust_no, sp_name, sp_datebirth, sp_profession))
+
+        # --- Employer Info ---
+        if occ_type == 'Employed':
+            emp_id = str(uuid.uuid4())[:10].upper()
+            tin_id = request.form.get('tin_id', '')
+            empname = request.form.get('empname', '')
+            emp_address = request.form.get('emp_address', '')
+            phonefax_no = request.form.get('phonefax_no', '')
+            job_title = request.form.get('job_title', '')
+            emp_date = request.form.get('emp_date') or '2000-01-01'
+
+            cursor.execute("""
+                INSERT INTO employer_details (
+                    emp_id, occ_id, tin_id, empname, emp_address, phonefax_no, job_title, emp_date
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (emp_id, occ_id, tin_id, empname, emp_address, phonefax_no, job_title, emp_date))
+
+            cursor.execute("""
+                INSERT INTO employment_details (cust_no, emp_id)
+                VALUES (%s, %s)
+            """, (cust_no, emp_id))
+
+        # --- Company Affiliations ---
+        depositor_roles = request.form.getlist('depositorRole[]')
+        dep_compnames = request.form.getlist('dep_compname[]')
+        
+        for role, company in zip(depositor_roles, dep_compnames):
+            if role and company:
+                cursor.execute("""
+                    INSERT INTO company_affiliation (cust_no, depositor_role, dep_compname)
+                    VALUES (%s, %s, %s)
+                """, (cust_no, role, company))
+
+        # --- Existing Bank Accounts ---
+        bank_names = request.form.getlist('bank_name[]')
+        branches = request.form.getlist('branch[]')
+        acc_types = request.form.getlist('acc_type[]')
+        
+        for bank_name, branch, acc_type in zip(bank_names, branches, acc_types):
+            if bank_name and branch and acc_type:
+                # First ensure bank exists
+                bank_code = str(uuid.uuid4())[:10].upper()
+                cursor.execute("""
+                    INSERT IGNORE INTO bank_details (bank_code, bank_name, branch)
+                    VALUES (%s, %s, %s)
+                """, (bank_code, bank_name, branch))
+                
+                cursor.execute("""
+                    INSERT INTO existing_bank (cust_no, bank_code, acc_type)
+                    VALUES (%s, %s, %s)
+                """, (cust_no, bank_code, acc_type))
+
+        # --- Public Official Relationships ---
+        gov_last_names = request.form.getlist('govLastName[]')
+        gov_first_names = request.form.getlist('govFirstName[]')
+        gov_middle_names = request.form.getlist('govMiddleName[]')
+        relations = request.form.getlist('relationship[]')
+        positions = request.form.getlist('position[]')
+        org_names = request.form.getlist('govBranchOrgName[]')
+        
+        for lname, fname, mname, relation, pos, org in zip(
+            gov_last_names, gov_first_names, gov_middle_names, 
+            relations, positions, org_names
+        ):
+            if fname and lname and relation and pos and org:
+                gov_int_id = str(uuid.uuid4())[:10].upper()
+                gov_int_name = f"{fname} {mname} {lname}".strip()
+                
+                cursor.execute("""
+                    INSERT INTO public_official_details (
+                        gov_int_id, gov_int_name, official_position, branch_orgname
+                    ) VALUES (%s, %s, %s, %s)
+                """, (gov_int_id, gov_int_name, pos, org))
+                
+                cursor.execute("""
+                    INSERT INTO cust_po_relationship (cust_no, gov_int_id, relation_desc)
+                    VALUES (%s, %s, %s)
+                """, (cust_no, gov_int_id, relation))
+
+        # --- Insert Credentials ---
+        username = email_address
+        password = f"defaultPass{cust_no}"  # In production, use proper password hashing
+        
+        cursor.execute("""
+            INSERT INTO credentials (cust_no, username, password)
+            VALUES (%s, %s, %s)
+        """, (cust_no, username, password))
+
+        conn.commit()
+        flash('Customer added successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    except mysql.connector.Error as err:
+        if conn:
+            conn.rollback()
+        flash(f'Database error: {err}', 'danger')
+        print(f"Database error during customer addition: {err}")
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+        print(f"Error during customer addition: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return redirect(url_for('admin_dashboard'))
+
+
+
+# --- ROUTE: Delete Customer ---
 @app.route('/delete_customer', methods=['POST'])
 def delete_customer():
     if 'admin' not in session:
@@ -886,6 +1284,9 @@ def delete_customer():
         # Delete from tables that have foreign keys referencing customer (or other tables that reference others)
         # Order of deletion is crucial due to foreign key constraints:
         # Delete child records first, then parent records.
+
+        # ADDED: Delete from credentials table first
+        cursor.execute("DELETE FROM credentials WHERE cust_no = %s", (cust_no,))
 
         # 1. Delete from cust_po_relationship
         cursor.execute("DELETE FROM cust_po_relationship WHERE cust_no = %s", (cust_no,))
@@ -954,6 +1355,7 @@ def delete_customer():
             cursor.close()
         if conn:
             conn.close()
+
 
 
 # --- Main execution block ---
