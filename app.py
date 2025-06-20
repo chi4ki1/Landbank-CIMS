@@ -1,6 +1,8 @@
-import mysql.connector
+import mysql.connector, os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import uuid # For generating unique IDs like cust_no and other VARCHAR IDs
+from werkzeug.utils import secure_filename
+from flask import make_response
 
 app = Flask(__name__)
 # IMPORTANT: Change this to a strong, unique secret key for production environments
@@ -181,6 +183,17 @@ def _ensure_database_schema():
         if conn:
             conn.close()
 
+
+def no_cache(view):
+    def no_cache_wrapper(*args, **kwargs):
+        response = make_response(view(*args, **kwargs))
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+    no_cache_wrapper.__name__ = view.__name__
+    return no_cache_wrapper
+
 # --- ROUTE: first landing page ---
 @app.route('/')
 def landing():
@@ -189,15 +202,23 @@ def landing():
 
 # ---ROUTE: home ---
 @app.route('/home')
+@no_cache
 def home():
-    """Renders the home page."""
+    if 'user' not in session:
+        flash('Please log in to access this page.', 'warning')
+        return redirect(url_for('login'))
     return render_template('home.html')
-
 # ---ROUTE: about ---
 @app.route('/about')
 def about():
     """Renders the about page."""
     return render_template('about.html')
+
+# ---ROUTE: about ---
+@app.route('/about-1')
+def userabout():
+    """Renders the about page."""
+    return render_template('userabout.html')
 
 # ---ROUTE: service ---
 @app.route('/services')
@@ -205,11 +226,21 @@ def services():
     """Renders the services page."""
     return render_template('services.html')
 
+@app.route('/services-1')
+def userservices():
+    """Renders the services page."""
+    return render_template('userservices.html')
+
 # ---ROUTE: contact ---
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
     return render_template('contact.html')
+
+@app.route('/contact-1')
+def usercontact():
+    """Renders the contact page."""
+    return render_template('usercontact.html')
 
 # ---ROUTE: Registration Print ---
 @app.route('/registrationPrint')
@@ -435,8 +466,8 @@ def insert_credentials(cursor, cust_no, data):
 
 
 # --- UserHome after login---
-@app.route('/userHome')
-def userHome():
+@app.route('/userform')
+def userform():
     if 'cust_no' not in session:
         flash('Please log in to access this page.', 'info')
         return redirect(url_for('login'))
@@ -521,7 +552,7 @@ def userHome():
         """, (cust_no,))
         user_data['public_official_relationships'] = cursor.fetchall()
 
-        return render_template('userHome.html', user_data=user_data)
+        return render_template('userform.html', user_data=user_data)
 
     except mysql.connector.Error as err:
         print(f"Database error in userHome: {err}")
@@ -538,13 +569,20 @@ def userHome():
             conn.close()
 
 # ---ROUTE: Logouts ---
-@app.route('/logout', methods=['POST']) # Add methods=['POST'] here
+@app.route('/logout', methods=['POST'])
 def logout():
-    session.pop('user', None)
-    session.pop('user_email', None)
-    session.pop('cust_no', None)
+    session.clear()  # Clear all session data
     flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    response = redirect(url_for('login'))
+    
+    # Prevent back button from caching the page
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    return response
+
+
 
 # ---ROUTE: Login User/Admin ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -583,12 +621,12 @@ def login():
                 session['cust_no'] = user['cust_no']
 
                 flash('Logged in successfully!', 'success')
-                return redirect(url_for('userHome'))
+                return redirect(url_for('home'))  # Changed from userHome to home
             else:
-                flash('Invalid username or password.', 'danger') # Corrected error message
+                flash('Invalid username or password.', 'danger')
                 return render_template('login.html', error='Invalid username or password.')
 
-        except mysql.connector.Error as err: # Catch specific database errors
+        except mysql.connector.Error as err:
             print(f"Database error during login: {err}")
             flash(f'An error occurred during login: {err}', 'danger')
             return render_template('login.html', error=f"Database error during login: {err}")
@@ -610,32 +648,74 @@ def registration_success():
     return render_template('registrationSuccess.html')
 
 # ---ROUTE: Admin Dashboard ---
+
 @app.route('/admin_dashboard')
+@no_cache
 def admin_dashboard():
     if 'admin' not in session:
         flash('Please login to access the admin dashboard.', 'warning')
         return redirect(url_for('login'))
+   
 
     conn = None
     cursor = None
     try:
+        # Get search and filter parameters from the request
+        search_query = request.args.get('search', '').strip()
+        status_filter = request.args.get('status', '')
+        date_filter = request.args.get('date', '')
+
         conn = get_db_connection()
         if not conn:
-            raise Exception("Database connection failed")
+            flash('Database connection failed.', 'danger')
+            return render_template('login.html', error='Database connection failed.')
 
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT c.cust_no, c.custname, c.email_address, c.contact_no
+        
+        # Base query
+        query = """
+            SELECT c.cust_no, c.custname, c.email_address, c.contact_no, c.status, c.datebirth
             FROM customer c
-            ORDER BY c.cust_no DESC
-        """)
+            WHERE 1=1
+        """
+        params = []
+
+        # Add search conditions (cust_no, email_address, full name)
+        if search_query:
+            query += " AND (c.cust_no LIKE %s OR c.email_address LIKE %s OR c.custname LIKE %s)"
+            search_param = f"%{search_query}%"
+            params.extend([search_param, search_param, search_param])
+
+        # Add status filter (Active, Pending, Inactive)
+        if status_filter:
+            query += " AND c.status = %s"
+            params.append(status_filter)
+
+        # Add date filter (using datebirth field)
+        if date_filter:
+            query += " AND DATE(c.datebirth) = %s"
+            params.append(date_filter)
+
+        # Complete query with ordering
+        query += " ORDER BY c.cust_no DESC"
+
+        cursor.execute(query, params)
         customers = cursor.fetchall()
 
-        return render_template('admin_dashboard.html', customers=customers)
+        return render_template('admin_dashboard.html', 
+                            customers=customers,
+                            current_search=search_query,
+                            current_status=status_filter,
+                            current_date=date_filter)
 
+    except mysql.connector.Error as err:
+        print(f"Database error in admin_dashboard: {err}")
+        flash(f'An error occurred while fetching customer data: {err}', 'danger')
+        return redirect(url_for('login'))
     except Exception as e:
         print(f"Error in admin_dashboard: {e}")
-        return "An error occurred while loading the dashboard.", 500
+        flash('An unexpected error occurred while loading the dashboard.', 'danger')
+        return redirect(url_for('login'))
     finally:
         if cursor:
             cursor.close()
@@ -1355,6 +1435,38 @@ def delete_customer():
             cursor.close()
         if conn:
             conn.close()
+
+
+UPLOAD_FOLDER = 'static/uploads'  # You can change this
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload_photo', methods=['POST'])
+def upload_photo():
+    if 'photo' not in request.files:
+        flash('No file part', 'error')
+        return redirect(request.referrer)
+
+    file = request.files['photo']
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(request.referrer)
+
+    if file and allowed_file(file.filename):
+        # Overwrite the default user icon
+        save_path = os.path.join('static', 'assets', 'user-icon.png')
+        file.save(save_path)
+        flash('Profile photo uploaded successfully!', 'success')
+        return redirect(request.referrer)
+    else:
+        flash('Invalid file type', 'error')
+        return redirect(request.referrer)
+    
+
 
 
 

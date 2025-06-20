@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     /* Base styles consistent with previous designs */
     .background-overlay {
@@ -22,24 +23,18 @@
       background-color: #385E38; /* Fallback dark green */
       color: #fff;
       min-height: 100vh; /* Ensure body covers full height */
-      display: flex;
-      flex-direction: column; /* Allow content to stack */
-      align-items: center; /* Center horizontally */
+      /* REMOVED: display: flex, flex-direction, and align-items were causing the modal issue. */
       padding: 1rem; /* Overall padding */
       box-sizing: border-box; /* Include padding in element's total width */
     }
     .container {
       margin-top: 32px;
       margin-bottom: 32px;
+      /* ADDED: margin-left and margin-right auto to re-center the container */
+      margin-left: auto;
+      margin-right: auto;
       background-color: rgba(255, 255, 255, 0.1);
-      padding: 2rem 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      position: relative;
-      z-index: 2;
-      width: 100%; /* Take full width within its flex context */
-      max-width: 1200px; /* Max width for larger screens */
+      /* ... other styles ... */
     }
     /* Responsive adjustments for container */
     @media (max-width: 991.98px) {
@@ -288,6 +283,16 @@
       }
     }
 
+    /* REMOVED: These z-index overrides are no longer necessary after fixing the body style */
+    /*
+    #addCustomerModal {
+      z-index: 99999 !important;
+    }
+    .modal-backdrop {
+      z-index: 99998 !important;
+    }
+    */
+
     /* Form Modal Styles (from Add Customer Modal) */
     .modal-content {
       background-color: #385E38; /* Dark green background */
@@ -383,7 +388,9 @@
       height: 1.1em;
       accent-color: #00B86B; /* Green accent color */
     }
-  </style>
+</style>
+
+
 </head>
 <body>
   <div class="background-overlay"></div>
@@ -395,46 +402,60 @@
       </form>
     </div>
 
-    <!-- Search, Filter, and Actions Controls -->
-    <form method="get" action="{{ url_for('admin_dashboard') }}" class="row g-2 align-items-end mb-4">
-      <div class="col-md-4 col-12">
-        <label for="search" class="form-label visually-hidden">Search</label>
-        <div class="input-group">
-          <span class="input-group-text" id="search-addon"><i class="fas fa-search"></i></span>
-          <input type="text" class="form-control" id="search" name="search" placeholder="Search customers..." value="{{ request.args.get('search', '') }}" aria-label="Search customers">
-        </div>
-      </div>
-      <div class="col-md-2 col-6">
-        <label for="status" class="form-label visually-hidden">Status</label>
-        <select class="form-select" id="status" name="status" aria-label="Filter by status">
-          <option value="">All Statuses</option>
-          <option value="Active" {% if request.args.get('status') == 'Active' %}selected{% endif %}>Active</option>
-          <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
-          <option value="Inactive" {% if request.args.get('status') == 'Inactive' %}selected{% endif %}>Inactive</option>
-        </select>
-      </div>
-      <div class="col-md-2 col-6">
-        <label for="reg_date" class="form-label visually-hidden">Registration Date</label>
-        <input type="date" class="form-control" id="reg_date" name="reg_date" value="{{ request.args.get('reg_date', '') }}" aria-label="Filter by registration date">
-      </div>
-      <div class="col-md-2 col-4 d-grid">
-        <button type="submit" class="btn btn-secondary shiny-btn w-100 py-2" style="font-size: 1rem;" title="Apply Filters" aria-label="Apply Filters">
-          <i class="fas fa-filter"></i> Apply
-        </button>
-      </div>
-      <div class="col-md-2 col-4 d-grid">
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary shiny-btn w-100 py-2" style="font-size: 1rem;" title="Refresh" aria-label="Refresh filters">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </a>
-      </div>
-      <div class="col-md-2 col-4 d-grid ms-md-auto">
-        <button type="button" class="btn btn-primary shiny-btn w-100 py-2" style="font-size: 1rem;" data-bs-toggle="modal" data-bs-target="#addCustomerModal" aria-label="Add Customer">
-          <i class="fas fa-user-plus"></i> Add Customer
-        </button>
-      </div>
-    </form>
 
-    <h4>Registered Customers</h4>
+
+
+
+
+    
+
+    <!-- Search, Filter, and Actions Controls -->
+    <!-- Search, Filter, and Actions Controls -->
+<!-- Search and Filter Form -->
+<form method="get" action="{{ url_for('admin_dashboard') }}" class="row g-2 align-items-end mb-4">
+  <div class="col-md-4 col-12">
+    <label for="search" class="form-label visually-hidden">Search</label>
+    <div class="input-group">
+      <span class="input-group-text" id="search-addon"><i class="fas fa-search"></i></span>
+      <input type="text" class="form-control" id="search" name="search" 
+             placeholder="Search by ID, Email, or Name" 
+             value="{{ current_search }}" 
+             aria-label="Search customers">
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <label for="status" class="form-label visually-hidden">Status</label>
+    <select class="form-select" id="status" name="status" aria-label="Filter by status">
+      <option value="">All Statuses</option>
+      <option value="Active" {% if current_status == 'Active' %}selected{% endif %}>Active</option>
+      <option value="Pending" {% if current_status == 'Pending' %}selected{% endif %}>Pending</option>
+      <option value="Inactive" {% if current_status == 'Inactive' %}selected{% endif %}>Not Active</option>
+    </select>
+  </div>
+  <div class="col-md-3 col-6">
+    <label for="date" class="form-label visually-hidden">Date</label>
+    <input type="date" class="form-control" id="date" name="date" 
+           value="{{ current_date }}" 
+           aria-label="Filter by date">
+  </div>
+  <div class="col-md-1 col-4 d-grid">
+    <button type="submit" class="btn btn-secondary shiny-btn w-100 py-2" style="font-size: 1rem;">
+      <i class="fas fa-filter"></i> Filter
+    </button>
+  </div>
+  <div class="col-md-1 col-4 d-grid">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary shiny-btn w-100 py-2" style="font-size: 1rem;">
+      <i class="fas fa-sync-alt"></i> Reset
+    </a>
+  </div>
+</form>
+
+    <h4 class="d-flex justify-content-between align-items-center">
+        <span>Registered Customers</span>
+        <button class="btn btn-primary shiny-btn" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+    <i class="fas fa-user-plus"></i> Add Customer
+  </button>
+    </h4>
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle mb-0">
         <thead class="table-dark">
@@ -490,7 +511,7 @@
             <td colspan="7" class="text-center">No customers found.</td> {# Updated colspan #}
           </tr>
           {% endfor %}
-        </tbody>
+        </tbodyRegistered Customers
       </table>
     </div>
   </div>
@@ -849,38 +870,31 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Function to add a new item to a dynamic list
-      function addDynamicListItem(listId, templateHtml) {
-        const listContainer = document.getElementById(listId);
-        const newItemDiv = document.createElement('div');
-        newItemDiv.innerHTML = templateHtml;
-        newItemDiv.classList.add('row', 'g-2', 'align-items-end', 'mb-2', 'dynamic-list-item');
-        
-        // Add remove button event listener
-        newItemDiv.querySelector('.remove-item-btn').addEventListener('click', function() {
-          newItemDiv.remove();
-          checkAndAddNoRecordsMessage(listContainer);
-        });
+     document.addEventListener('DOMContentLoaded', function() {
+    // Initialize date picker with today's date as default
+    const dateInput = document.getElementById('date');
+    if (!dateInput.value) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.value = today;
+    }
 
-        // Remove "No records listed." message if present
-        const noRecordsMessage = listContainer.querySelector('.no-records');
-        if (noRecordsMessage) {
-          noRecordsMessage.remove();
-        }
+    // Remove any backslashes or fix template syntax errors
+document.querySelector('a[href="admin_dashboard"]').addEventListener('click', function(e) {
+    document.getElementById('search').value = '';
+    document.getElementById('status').value = '';
+    document.getElementById('date').value = '';
+});
 
-        listContainer.appendChild(newItemDiv);
-      }
-
-      // Function to check if a list is empty and add "No records" message
-      function checkAndAddNoRecordsMessage(listContainer) {
-        if (listContainer.querySelectorAll('.dynamic-list-item').length === 0) {
-          const noRecordsMessage = document.createElement('div');
-          noRecordsMessage.classList.add('no-records');
-          noRecordsMessage.textContent = 'No records listed.';
-          listContainer.appendChild(noRecordsMessage);
-        }
-      }
+    // Enhance search input with debounce
+    const searchInput = document.getElementById('search');
+    let searchTimer;
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        this.form.submit();
+      }, 500);
+    });
+  });
 
       // Templates for new dynamic list items (matching your MySQL schema expectations for name attributes)
       const companyAffiliationTemplate = `
@@ -1024,7 +1038,7 @@
           }
         });
       });
-    });
+      
   </script>
 </body>
 </html>

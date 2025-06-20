@@ -4,56 +4,232 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Landbank - Customer Information Management System</title>
-  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Fredoka:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Only adding this one new style to fix the navbar */
+    .navbar {
+      position: fixed;
+      width: 100%;
+      top: 0;
+    }
+
+    /* All your existing styles remain exactly the same */
+    .profile-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .profile-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #ccc;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      min-width: 180px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1002;
+      margin-top: 10px;
+    }
+
+    .dropdown-menu a {
+      color: #333;
+      padding: 10px 15px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: #f5f5f5;
+    }
+
+    .dropdown-menu i {
+      margin-right: 10px;
+      width: 18px;
+      color: #555;
+    }
+
+    .show {
+      display: block;
+    }
+
+    /* Original navbar styles */
+    .navbar {
+  position: fixed;        /* Keep navbar in place while scrolling */
+  top: 0;                 /* Stick it to the top */
+  left: 0;
+  width: 100%;            /* Ensure full width */
+  z-index: 1000;
+  padding-right: 80px;    /* Keep existing spacing for profile icon */
+}
+
+
+    .chat-help {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #007bff;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .chat-help:hover {
+      background: #0069d9;
+      transform: scale(1.1);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.05);
+      z-index: -1;
+    }
+
+.main-content {
+  padding-top: 100px; /* adjust depending on navbar height */
+}
+
+
+  </style>
 </head>
 <body>
     <div class="background-overlay"></div>
-  <header class="navbar">
-    <div class="navbar-left">
-      <img src="assets/LANDBANK.png" alt="Landbank Logo" class="navbar-logo">
-      <span class="navbar-title">LBMS PORTAL</span>
-    </div>
-    <nav class="navbar-links">
-      <a href="#">HOME</a>
-      <a href="#">ABOUT</a>
-      <a href="#">SERVICES</a>
-      <a href="#">CONTACT</a>
-    </nav>
-  </header>
-  <main class="main-content">
-    <div class="center-content">
-    <img src="assets/LANDBANK.png" alt="Landbank Logo" class="main-logo">
-      <h1 id="welcome-message">WELCOME, USER</h1> 
-      <p>What would you like to do?</p>
-      <div class="icon-row">
-        <div class="icon-block">
-          <img src="assets/transactions-icon.png" alt="Transactions">
-          <div>TRANSACTIONS</div>
-        </div>
-        <div class="icon-block">
-          <img src="assets/profile-icon.png" alt="Profile">
-          <div>PROFILE</div>
-        </div>
-        <div class="icon-block">
-          <img src="assets/forms-icon.png" alt="Forms">
-          <div>FORMS</div>
+
+    <!-- Navbar - now fixed at top -->
+    <header class="navbar">
+      <div class="navbar-left">
+        <img src="{{ url_for('static', filename='assets/LANDBANK.png') }}" alt="Landbank Logo" class="navbar-logo">
+        <span class="navbar-title">LBMS PORTAL</span>
+      </div>
+      <nav class="navbar-links">
+        <a href="{{ url_for('home') }}" class="active">HOME</a>
+        <a href="{{ url_for('userabout') }}">ABOUT</a>
+        <a href="{{ url_for('userservices') }}">SERVICES</a>
+        <a href="{{ url_for('usercontact') }}">CONTACT</a>
+      </nav>
+      
+      <div class="profile-container">
+        <button class="profile-btn" id="profileButton">
+          <img src="{{ url_for('static', filename='assets/user-icon.png') }}" alt="Profile" class="profile-img"
+               onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMnptMCAyYzQuNDE4IDAgOCAzLjU4MiA4IDhzLTMuNTgyIDgtOCA4LTgtMy41ODItOC04IDMuNTgyLTggOC04eiIvPjxwYXRoIGQ9Ik0xMiA5Yy0xLjY1NCAwLTMgMS4zNDYtMyAzczEuMzQ2IDMgMyAzIDMtMS4zNDYgMy0zLTEuMzQ2LTMtMy0zem0wIDdjLTIuMjA5IDAtNCAxLjM0My00IDN2MWg4di0xYzAtMS42NTctMS43OTEtMy00LTN6Ii8+PC9zdmc+'">
+        </button>
+        <div id="profileDropdown" class="dropdown-menu">
+          <a href="#"><i class="fas fa-user-edit"></i> Update Profile</a>
+         <form action="{{ url_for('upload_photo') }}" method="post" enctype="multipart/form-data" style="margin: 0;">
+  <label for="upload" style="display: flex; align-items: center; padding: 10px 15px; color: #333; font-size: 14px; cursor: pointer;">
+    <i class="fas fa-camera" style="margin-right: 10px; width: 18px; color: #555;"></i> Upload Photo
+    <input type="file" name="photo" id="upload" onchange="this.form.submit()" style="display: none;">
+  </label>
+</form>
+
+          <form action="{{ url_for('logout') }}" method="post" style="margin: 0;">
+  <button type="submit" style="all: unset; cursor: pointer; width: 100%;">
+    <a style="display: flex; align-items: center; padding: 10px 15px; color: #333; font-size: 14px;">
+      <i class="fas fa-sign-out-alt" style="margin-right: 10px; width: 18px; color: #555;"></i> Logout
+    </a>
+  </button>
+</form>
+
         </div>
       </div>
+    </header>
+
+    <!-- Main content - add padding-top to account for fixed navbar -->
+    <main class="main-content" style="padding-top: 80px;">
+      <div class="center-content">
+        <img src="{{ url_for('static', filename='assets/LANDBANK.png') }}" alt="Landbank Logo" class="main-logo">
+        <h1 id="welcome-message">WELCOME, {% if 'user' in session %}{{ session['user'] }}{% else %}USER{% endif %}</h1>
+        <p>What would you like to do?</p>
+        <div class="icon-row">
+          <div class="icon-block">
+            <img src="{{ url_for('static', filename='assets/transactions-icon.png') }}" alt="Transactions">
+            <div>TRANSACTIONS</div>
+          </div>
+          <div class="icon-block">
+            <img src="{{ url_for('static', filename='assets/profile-icon.png') }}" alt="Profile">
+            <a href="" style="text-decoration: none; color: inherit;">PROFILE</a>
+          </div>
+          <a href="{{ url_for('userform') }}" style="text-decoration: none; color: inherit;">
+  <div class="icon-block">
+      <img src="{{ url_for('static', filename='assets/forms-icon.png') }}" alt="Forms">
+      <div>FORMS</div>
+  </div>
+</a>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Chat help button -->
+    <div class="chat-help" onclick="openChat()">
+      <i class="fas fa-comment-dots"></i>
     </div>
-  </main>
-  
-  <script>
-    // Get user from localStorage
-    const user = localStorage.getItem('lbmsUser');
-    if (!user) {
-      // Not logged in, redirect to login
-      window.location.href = 'login.html';
-    } else {
-      document.getElementById('welcome-message').textContent = `WELCOME, ${user.toUpperCase()}`;
-    }
-  </script>
+
+    <script>
+      // Profile dropdown functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        
+        profileButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          profileDropdown.classList.toggle('show');
+        });
+        
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.profile-container')) {
+            profileDropdown.classList.remove('show');
+          }
+        });
+      });
+
+      function openChat() {
+        alert("Help center chat will open here!");
+      }
+    </script>
 </body>
 </html>
