@@ -544,13 +544,28 @@
                         <label for="source_wealth">Source of Wealth:</label>
                         <input type="text" id="source_wealth" name="source_wealth" value="{{ customer_data.financial_record.source_wealth | default('') }}">
                     </div>
+
                     <div class="summary-item">
                         <label for="mon_income">Monthly Income:</label>
-                        <input type="number" id="mon_income" name="mon_income" value="{{ customer_data.financial_record.mon_income | default('') }}">
+                                <select name="mon_income" id="monthlyIncome"required>
+                                <option value="" disabled selected hidden></option>
+                                <option value="Php 30,000.00 and below">Php 30,000.00 and below</option>
+                                <option value="Php 30,000.01-50,000.00">Php 30,000.01-50,000.00</option>
+                                <option value="Php 50,000.01-100,000.00">Php 50,000.01-100,000.00</option>
+                                <option value="Php 100,000.01-500,000.00">Php 100,000.01-500,000.00</option>
+                                <option value="Over Php 500,000.00">Over Php 500,000.00</option>
+                            </select>
                     </div>
                     <div class="summary-item">
                         <label for="ann_income">Annual Income:</label>
-                        <input type="number" id="ann_income" name="ann_income" value="{{ customer_data.financial_record.ann_income | default('') }}">
+                        <select name="ann_income" id="annualIncome"required>
+                                <option value="" disabled selected hidden></option>
+                                <option value="Php 360,000.00 and below">Php 360,000.00 and below</option>
+                                <option value="Php 360,000.01-600,000.00">Php 360,000.01-600,000.00</option>
+                                <option value="Php 600,000.01-1,200,000.00">Php 600,000.01-1,200,000.00</option>
+                                <option value="Php 1,200,000.01-6,000,000.00">Php 1,200,000.01-6,000,000.00</option>
+                                <option value="Over Php 6,000,000.00">Over Php 6,000,000.00</option>
+                            </select>
                     </div>
                 </div>
             </section>

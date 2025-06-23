@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS credentials (
 
 
 
-
+USE database_landbank;
 
 
 
@@ -362,17 +362,33 @@ VALUES
 ('C014', 'aaliyah.benitez25@gmail.com', 'encryptedPasswordHere'),
 ('C015', 'aaronqbenitez1995@gmail.com', 'encryptedPasswordHere');
 
+USE database_landbank;
+DELIMITER $$
+
+CREATE TRIGGER before_insert_customer
+BEFORE INSERT ON customer
+FOR EACH ROW
+BEGIN
+  DECLARE last_code VARCHAR(10);
+  DECLARE next_number INT;
+
+  SELECT cust_no
+  INTO last_code
+  FROM customer
+  ORDER BY cust_no DESC
+  LIMIT 1;
+
+  IF last_code IS NULL THEN
+    SET next_number = 1;
+  ELSE
+    SET next_number = CAST(SUBSTRING(last_code, 2) AS UNSIGNED) + 1;
+  END IF;
+
+  SET NEW.cust_no = CONCAT('C', LPAD(next_number, 3, '0'));
+END$$
 
 
-
-
-
-
-
-
-
-
-
+DELIMITER ;
 
 USE database_landbank;
 
@@ -500,8 +516,6 @@ BEGIN
 END$$
 
 DELIMITER ;
-
-
 
 -- fin_code auto increment
 DELIMITER $$

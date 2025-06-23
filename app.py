@@ -1,17 +1,31 @@
-import mysql.connector
+# START OF MODIFICATIONS - PART 1
+
+import mysql.connector, os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import uuid # For generating unique IDs like cust_no and other VARCHAR IDs
+import uuid
+from werkzeug.utils import secure_filename
+from flask import make_response
+from werkzeug.security import generate_password_hash, check_password_hash # ADD THIS NEW IMPORT
 
 app = Flask(__name__)
-# IMPORTANT: Change this to a strong, unique secret key for production environments
-app.secret_key = 'your_super_secret_key_here'
+
+# IMPORTANT: Load secret key from environment variable for production
+# If FLASK_SECRET_KEY is not set, it will fall back to a default (change in production!)
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_super_secret_key_here') # UPDATE THIS LINE
+# For development, you can keep 'your_super_secret_key_here' as a fallback.
+# For production, set this environment variable:
+# On Linux/macOS: export FLASK_SECRET_KEY='a_very_long_and_random_string'
+# On Windows (Cmd): set FLASK_SECRET_KEY=a_very_long_and_random_string
+# On Windows (PowerShell): $env:FLASK_SECRET_KEY='a_very_long_and_random_string'
+
+# END OF MODIFICATIONS - PART 1
 
 # Database configuration
 db_config = {
     'host': '127.0.0.1',  # Use 127.0.0.1 for local MySQL, or your database host
     'port': '3306',
     'user': 'root',
-    'password': 'LandBank@2025',  # Your MySQL root password
+    'password': 'sHbZwyuip77_', 
     'database': 'database_landbank'
 }
 
@@ -181,6 +195,83 @@ def _ensure_database_schema():
         if conn:
             conn.close()
 
+
+def no_cache(view):
+    def no_cache_wrapper(*args, **kwargs):
+        response = make_response(view(*args, **kwargs))
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+    no_cache_wrapper.__name__ = view.__name__
+    return no_cache_wrapper
+
+
+# START OF MODIFICATIONS - PART 2: NEW HELPER FUNCTIONS
+
+def generate_next_cust_no(cursor):
+    """
+    Generates the next sequential customer number (e.g., C001, C002, ..., C015, C016).
+    Assumes cust_no always starts with 'C' followed by numbers.
+    """
+    try:
+        cursor.execute("SELECT MAX(CAST(SUBSTRING(cust_no, 2) AS UNSIGNED)) AS max_cust_num FROM customer")
+        result = cursor.fetchone()
+        
+        max_num = result['max_cust_num'] if result and result['max_cust_num'] is not None else 0
+        
+        next_num = max_num + 1
+        
+        # Format the number with leading zeros to ensure three digits (e.g., 1 -> 001, 15 -> 015)
+        new_cust_no = f"C{next_num:03d}"
+        
+        return new_cust_no
+    except Exception as e:
+        print(f"Error generating next cust_no: {e}")
+        return None
+
+def get_or_insert_occupation(cursor, occ_type, bus_nature):
+    """
+    Checks if an occupation with the given type and nature exists.
+    If yes, returns its occ_id. If no, inserts a new occupation,
+    generates a new occ_id, and returns it.
+    """
+    cursor.execute("SELECT occ_id FROM occupation WHERE occ_type = %s AND bus_nature = %s", (occ_type, bus_nature))
+    result = cursor.fetchone()
+    if result:
+        return result['occ_id']
+    else:
+        cursor.execute("SELECT MAX(CAST(SUBSTRING(occ_id, 3) AS UNSIGNED)) AS max_occ_num FROM occupation")
+        max_num_res = cursor.fetchone()
+        max_num = max_num_res['max_occ_num'] if max_num_res and max_num_res['max_occ_num'] is not None else 0
+        new_occ_id = f"OC{max_num + 1:02d}" # Format like OC01, OC02
+
+        cursor.execute("INSERT INTO occupation (occ_id, occ_type, bus_nature) VALUES (%s, %s, %s)", (new_occ_id, occ_type, bus_nature))
+        return new_occ_id
+
+def get_or_insert_financial_record(cursor, source_wealth, mon_income, ann_income):
+    """
+    Checks if a financial record with the given details exists.
+    If yes, returns its fin_code. If no, inserts a new record,
+    generates a new fin_code, and returns it.
+    """
+    cursor.execute("SELECT fin_code FROM financial_record WHERE source_wealth = %s AND mon_income = %s AND ann_income = %s", (source_wealth, mon_income, ann_income))
+    result = cursor.fetchone()
+    if result:
+        return result['fin_code']
+    else:
+        cursor.execute("SELECT MAX(CAST(SUBSTRING(fin_code, 2) AS UNSIGNED)) AS max_fin_num FROM financial_record")
+        max_num_res = cursor.fetchone()
+        max_num = max_num_res['max_fin_num'] if max_num_res and max_num_res['max_fin_num'] is not None else 0
+        new_fin_code = f"F{max_num + 1}" # Format like F1, F2 (adjust to F01, F02 if preferred by changing f"F{max_num + 1:02d}")
+
+        cursor.execute("INSERT INTO financial_record (fin_code, source_wealth, mon_income, ann_income) VALUES (%s, %s, %s, %s)", (new_fin_code, source_wealth, mon_income, ann_income))
+        return new_fin_code
+
+# END OF MODIFICATIONS - PART 2
+
+
+
 # --- ROUTE: first landing page ---
 @app.route('/')
 def landing():
@@ -189,15 +280,23 @@ def landing():
 
 # ---ROUTE: home ---
 @app.route('/home')
+@no_cache
 def home():
-    """Renders the home page."""
+    if 'user' not in session:
+        flash('Please log in to access this page.', 'warning')
+        return redirect(url_for('login'))
     return render_template('home.html')
-
 # ---ROUTE: about ---
 @app.route('/about')
 def about():
     """Renders the about page."""
     return render_template('about.html')
+
+# ---ROUTE: about ---
+@app.route('/about-1')
+def userabout():
+    """Renders the about page."""
+    return render_template('userabout.html')
 
 # ---ROUTE: service ---
 @app.route('/services')
@@ -205,11 +304,21 @@ def services():
     """Renders the services page."""
     return render_template('services.html')
 
+@app.route('/services-1')
+def userservices():
+    """Renders the services page."""
+    return render_template('userservices.html')
+
 # ---ROUTE: contact ---
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
     return render_template('contact.html')
+
+@app.route('/contact-1')
+def usercontact():
+    """Renders the contact page."""
+    return render_template('usercontact.html')
 
 # ---ROUTE: Registration Print ---
 @app.route('/registrationPrint')
@@ -418,25 +527,36 @@ def submit_registration():
             conn.close()
 
 # --- Helper Function Definitions (Called from submit_registration) ---
+# START OF MODIFICATIONS - PART 3: UPDATED insert_credentials
+
 def insert_credentials(cursor, cust_no, data):
     """
-    Inserts user credentials into the credentials table.
+    Inserts user credentials into the credentials table, hashing the password.
+    Assumes `data` contains 'email' and a *plain-text* 'password' field.
     """
     username = data.get('email')
-    # IMPORTANT: In a real application, you MUST hash passwords.
-    # For now, using a default password based on cust_no for demonstration.
-    password = f"defaultPass{cust_no}"
+    plain_password = data.get('password')
+
+    # Hash the password using werkzeug.security
+    if plain_password:
+        hashed_password = generate_password_hash(plain_password)
+    else:
+        # Handle case where no password is provided (e.g., generate a random one or raise error)
+        # For now, let's hash an empty string or raise an error. Better to enforce password.
+        hashed_password = generate_password_hash('') # Hashing an empty string
+        print("Warning: No plain password provided for hashing in insert_credentials.")
 
     sql = """
         INSERT INTO credentials (cust_no, username, password)
         VALUES (%s, %s, %s)
     """
-    cursor.execute(sql, (cust_no, username, password))
+    cursor.execute(sql, (cust_no, username, hashed_password)) # Store the hashed password
 
+# END OF MODIFICATIONS - PART 3
 
 # --- UserHome after login---
-@app.route('/userHome')
-def userHome():
+@app.route('/userform')
+def userform():
     if 'cust_no' not in session:
         flash('Please log in to access this page.', 'info')
         return redirect(url_for('login'))
@@ -521,7 +641,7 @@ def userHome():
         """, (cust_no,))
         user_data['public_official_relationships'] = cursor.fetchall()
 
-        return render_template('userHome.html', user_data=user_data)
+        return render_template('userform.html', user_data=user_data)
 
     except mysql.connector.Error as err:
         print(f"Database error in userHome: {err}")
@@ -538,13 +658,20 @@ def userHome():
             conn.close()
 
 # ---ROUTE: Logouts ---
-@app.route('/logout', methods=['POST']) # Add methods=['POST'] here
+@app.route('/logout', methods=['POST'])
 def logout():
-    session.pop('user', None)
-    session.pop('user_email', None)
-    session.pop('cust_no', None)
+    session.clear()  # Clear all session data
     flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    response = redirect(url_for('login'))
+    
+    # Prevent back button from caching the page
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    return response
+
+
 
 # ---ROUTE: Login User/Admin ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -583,12 +710,12 @@ def login():
                 session['cust_no'] = user['cust_no']
 
                 flash('Logged in successfully!', 'success')
-                return redirect(url_for('userHome'))
+                return redirect(url_for('home'))  # Changed from userHome to home
             else:
-                flash('Invalid username or password.', 'danger') # Corrected error message
+                flash('Invalid username or password.', 'danger')
                 return render_template('login.html', error='Invalid username or password.')
 
-        except mysql.connector.Error as err: # Catch specific database errors
+        except mysql.connector.Error as err:
             print(f"Database error during login: {err}")
             flash(f'An error occurred during login: {err}', 'danger')
             return render_template('login.html', error=f"Database error during login: {err}")
@@ -610,32 +737,74 @@ def registration_success():
     return render_template('registrationSuccess.html')
 
 # ---ROUTE: Admin Dashboard ---
+
 @app.route('/admin_dashboard')
+# @no_cache # Uncomment this if you have the no_cache decorator defined
 def admin_dashboard():
     if 'admin' not in session:
         flash('Please login to access the admin dashboard.', 'warning')
         return redirect(url_for('login'))
-
+   
     conn = None
     cursor = None
     try:
+        # Get search and filter parameters from the request
+        search_query = request.args.get('search', '').strip()
+        status_filter = request.args.get('status', '')
+        date_filter = request.args.get('date', '')
+
         conn = get_db_connection()
         if not conn:
-            raise Exception("Database connection failed")
+            flash('Database connection failed.', 'danger')
+            return render_template('login.html', error='Database connection failed.')
 
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT c.cust_no, c.custname, c.email_address, c.contact_no
+        
+        # Base query
+        query = """
+            SELECT c.cust_no, c.custname, c.email_address, c.contact_no, c.status, c.datebirth
             FROM customer c
-            ORDER BY c.cust_no DESC
-        """)
+            WHERE 1=1
+        """
+        params = []
+
+        # --- UPDATED APPROACH: Case-insensitive search using LOWER() ---
+        if search_query:
+            # Convert both the database columns and the search query to lowercase for comparison
+            query += " AND (LOWER(c.cust_no) LIKE %s OR LOWER(c.email_address) LIKE %s OR LOWER(c.custname) LIKE %s)"
+            search_param_lower = f"%{search_query.lower()}%" # Convert the search query to lowercase
+            params.extend([search_param_lower, search_param_lower, search_param_lower])
+
+        # Add status filter (Active, Pending, Inactive)
+        if status_filter:
+            query += " AND c.status = %s"
+            params.append(status_filter)
+
+        # Add date filter (using datebirth field)
+        if date_filter:
+            query += " AND DATE(c.datebirth) = %s"
+            params.append(date_filter)
+
+        # Complete query with ordering
+        query += " ORDER BY c.cust_no DESC"
+
+        cursor.execute(query, params)
         customers = cursor.fetchall()
 
-        return render_template('admin_dashboard.html', customers=customers)
+        return render_template('admin_dashboard.html', 
+                            customers=customers,
+                            current_search=search_query,
+                            current_status=status_filter,
+                            current_date=date_filter)
 
+    except mysql.connector.Error as err:
+        print(f"Database error in admin_dashboard: {err}")
+        flash(f'An error occurred while fetching customer data: {err}', 'danger')
+        return redirect(url_for('login'))
     except Exception as e:
         print(f"Error in admin_dashboard: {e}")
-        return "An error occurred while loading the dashboard.", 500
+        flash('An unexpected error occurred while loading the dashboard.', 'danger')
+        return redirect(url_for('login'))
     finally:
         if cursor:
             cursor.close()
@@ -1355,6 +1524,133 @@ def delete_customer():
             cursor.close()
         if conn:
             conn.close()
+
+
+UPLOAD_FOLDER = 'static/uploads'  # You can change this
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload_photo', methods=['POST'])
+def upload_photo():
+    if 'photo' not in request.files:
+        flash('No file part', 'error')
+        return redirect(request.referrer)
+
+    file = request.files['photo']
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(request.referrer)
+
+    if file and allowed_file(file.filename):
+        # Overwrite the default user icon
+        save_path = os.path.join('static', 'assets', 'user-icon.png')
+        file.save(save_path)
+        flash('Profile photo uploaded successfully!', 'success')
+        return redirect(request.referrer)
+    else:
+        flash('Invalid file type', 'error')
+        return redirect(request.referrer)
+    
+# START OF MODIFICATIONS - PART 4: UPDATED r1 ROUTE
+
+# --- ROUTE: Register Customer Step 1 ---
+@app.route('/r1', methods=['GET', 'POST'])
+def r1():
+    if request.method == 'POST':
+        conn = None
+        cursor = None
+        try:
+            conn = get_db_connection()
+            if not conn:
+                flash('Database connection failed.', 'danger')
+                return render_template('r1.html', error='Database connection failed.')
+
+            cursor = conn.cursor(dictionary=True)
+
+            # Generate the new cust_no
+            cust_no = generate_next_cust_no(cursor)
+            if not cust_no:
+                flash('Failed to generate customer number. Please try again.', 'danger')
+                return render_template('r1.html')
+
+            # Extract form data
+            data = {
+                'cust_no': cust_no, # Use the generated cust_no
+                'custname': request.form['custname'],
+                'datebirth': request.form['datebirth'],
+                'nationality': request.form['nationality'],
+                'citizenship': request.form['citizenship'],
+                'custsex': request.form['custsex'],
+                'placebirth': request.form['placebirth'],
+                'civilstatus': request.form['civilstatus'],
+                'num_children': int(request.form['num_children']),
+                'mmaiden_name': request.form['mmaiden_name'],
+                'cust_address': request.form['cust_address'],
+                'email_address': request.form['email_address'],
+                'contact_no': request.form['contact_no'],
+                'occ_type': request.form['occ_type'], # From form for occupation
+                'bus_nature': request.form['bus_nature'], # From form for occupation
+                'source_wealth': request.form['source_wealth'], # From form for financial
+                'mon_income': request.form['mon_income'], # From form for financial
+                'ann_income': request.form['ann_income'], # From form for financial
+                'password': request.form.get('password', 'default_password_for_new_user') # Get password from form or use default
+            }
+
+            # Get or insert occupation and financial record, ensuring unique IDs
+            occ_id = get_or_insert_occupation(cursor, data['occ_type'], data['bus_nature'])
+            fin_code = get_or_insert_financial_record(cursor, data['source_wealth'], data['mon_income'], data['ann_income'])
+
+            if not occ_id or not fin_code:
+                flash('Error processing occupation or financial data. Please check inputs.', 'danger')
+                conn.rollback() # Rollback if related data insertion fails
+                return render_template('r1.html')
+
+            # Insert into customer table
+            sql_customer = """
+                INSERT INTO customer (
+                    cust_no, custname, datebirth, nationality, citizenship, custsex, placebirth,
+                    civilstatus, num_children, mmaiden_name, cust_address, email_address,
+                    contact_no, occ_id, fin_code, status
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'Active')
+            """
+            cursor.execute(sql_customer, (
+                data['cust_no'], data['custname'], data['datebirth'], data['nationality'],
+                data['citizenship'], data['custsex'], data['placebirth'], data['civilstatus'],
+                data['num_children'], data['mmaiden_name'], data['cust_address'],
+                data['email_address'], data['contact_no'], occ_id, fin_code
+            ))
+
+            # Insert into credentials table using the generated cust_no and hashed password
+            insert_credentials(cursor, data['cust_no'], {'email': data['email_address'], 'password': data['password']})
+
+            conn.commit()
+            flash('Registration successful!', 'success')
+            return redirect(url_for('login')) # Redirect to login page
+
+        except mysql.connector.Error as err:
+            if conn:
+                conn.rollback() # Rollback changes if an error occurs
+            print(f"Database error during registration: {err}")
+            flash(f'An error occurred during registration: {err}', 'danger')
+            return render_template('r1.html', error=f"Database error during registration: {err}")
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            print(f"Registration error: {e}")
+            flash('An unexpected error occurred during registration.', 'danger')
+            return render_template('r1.html', error='An unexpected error occurred during registration.')
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+    return render_template('r1.html')
+
+# END OF MODIFICATIONS - PART 4
 
 
 
